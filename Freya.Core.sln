@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A1454883-B97
 		src\Freya.Core\Freya.Core.fsproj.paket.references = src\Freya.Core\Freya.Core.fsproj.paket.references
 	EndProjectSection
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Tests", "tests\Freya.Core.Tests\Freya.Core.Tests.fsproj", "{3EB51D87-C821-40FC-9B29-72C5778167DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{CE8119B8-0D72-4911-BD3B-7E2E1B276418}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE8119B8-0D72-4911-BD3B-7E2E1B276418}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE8119B8-0D72-4911-BD3B-7E2E1B276418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,5 +55,6 @@ Global
 		{28801462-331E-4567-B957-8ABC6A31F235} = {8854178D-46EB-468E-A90D-9F78A152C6D2}
 		{CE8119B8-0D72-4911-BD3B-7E2E1B276418} = {6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}
 		{A1454883-B97F-450F-A3CC-21AA9CF9779B} = {37B45443-D941-4367-A734-C370F9E121C9}
+		{3EB51D87-C821-40FC-9B29-72C5778167DC} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
 	EndGlobalSection
 EndGlobal
