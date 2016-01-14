@@ -1,0 +1,2 @@
+# freya-core
+Coming Soon
