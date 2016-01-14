@@ -1,0 +1,20 @@
+source http://nuget.org/api/v2
+
+nuget Aether ~> 8
+
+group Build
+
+  source http://nuget.org/api/v2
+
+  nuget Fake
+  github xyncro/build build.fsx
+
+group Test
+
+  framework: >= net45
+  source http://nuget.org/api/v2
+
+  nuget Unquote
+  nuget xunit
+  nuget xunit.runner.console
+

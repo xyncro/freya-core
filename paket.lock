@@ -1,0 +1,33 @@
+NUGET
+  remote: http://www.nuget.org/api/v2
+  specs:
+    Aether (8.0.2)
+
+GROUP Build
+NUGET
+  remote: http://www.nuget.org/api/v2
+  specs:
+    FAKE (4.14.5)
+GITHUB
+  remote: xyncro/build
+  specs:
+    build.fsx (1407924c1087499b7e553ee1270de91844c98c2a)
+GROUP Test
+FRAMEWORK: >= NET45
+NUGET
+  remote: http://www.nuget.org/api/v2
+  specs:
+    Unquote (3.1.0)
+    xunit (2.1.0)
+      xunit.assert (2.1.0)
+      xunit.core (2.1.0)
+    xunit.abstractions (2.0.0)
+    xunit.assert (2.1.0)
+    xunit.core (2.1.0)
+      xunit.extensibility.core (2.1.0)
+      xunit.extensibility.execution (2.1.0)
+    xunit.extensibility.core (2.1.0)
+      xunit.abstractions (2.0.0)
+    xunit.extensibility.execution (2.1.0)
+      xunit.extensibility.core (2.1.0)
+    xunit.runner.console (2.1.0)
