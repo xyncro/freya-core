@@ -58,6 +58,7 @@
   -->
   <ItemGroup>
     <Compile Include="Core.fs" />
+    <Compile Include="Constants.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A5BF123D-95DD-4203-930C-89568CAE3FA7}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
-		paket-files\build\xyncro\build\build.fsx = paket-files\build\xyncro\build\build.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{37B45443-D941-4367-A734-C370F9E121C9}"
