@@ -115,9 +115,6 @@ type Freya<'a> =
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
-type Configuration<'c> =
-    'c -> unit * 'c
-
 type Pipeline =
     Freya<PipelineChoice>
 
@@ -259,31 +256,6 @@ module Freya =
         let inline map o f =
             State.map (Optic.map o f)
 
-(* Configuration
-
-   Functions for working with the Configuration function, designed for
-   use in creating expression based builders. *)
-
-[<RequireQualifiedAccess>]
-module Configuration =
-
-    (* Common *)
-
-    let bind (m: Configuration<'c>, f: unit -> Configuration<'c>) : Configuration<'c> =
-        m >> snd >> f ()
-
-    let combine (m1: Configuration<'c>, m2: Configuration<'c>) : Configuration<'c> =
-        m1 >> snd >> m2
-
-    let init () : Configuration<'c> =
-        tuple ()
-
-    let initFrom (m: Configuration<'c>) : Configuration<'c> =
-        m
-
-    let map (m: Configuration<'c>, f: 'c -> 'c) : Configuration<'c> =
-        m >> snd >> f >> tuple ()
-
 (* Inference
 
    Pseudo-Typeclass based inference of various types, automatically converting
@@ -388,13 +360,9 @@ module Integration =
 
 (* Builders
 
-   Computation expression builders for the common forms of function, the core
-   Freya function and the Freya Configuration function, with an associated
-   builder. The Freya Configuration function is not used directly, but is
-   expected to be subclassed for specific configuration builders, supplying
-   the type parameter. *)
-
-(* Freya *)
+   Computation expression builders for the common Freya function, providing
+   an alternative syntax for those who wish to avoid monadic composition and/or
+   symbolic operators. *)
 
 type FreyaBuilder () =
 
@@ -418,33 +386,6 @@ type FreyaBuilder () =
 
 let freya =
     FreyaBuilder ()
-
-(* Configuration *)
-
-type ConfigurationBuilder<'c> () =
-
-    member __.Bind (m: Configuration<'c>, f: unit -> Configuration<'c>) : Configuration<'c> =
-        Configuration.bind (m, f)
-
-    member __.Return () : Configuration<'c> =
-        Configuration.init ()
-
-    member __.ReturnFrom (m: Configuration<'c>) : Configuration<'c> =
-        Configuration.initFrom (m)
-
-    member __.Combine (m1: Configuration<'c>, m2: Configuration<'c>) : Configuration<'c> =
-        Configuration.combine (m1, m2)
-
-    (* Extended *)
-
-    member __.Map (m: Configuration<'c>, f: 'c -> 'c) : Configuration<'c> =
-        Configuration.map (m, f)
-
-    (* Syntax *)
-
-    [<CustomOperation ("including", MaintainsVariableSpaceUsingBind = true)>]
-    member x.Including (m, including) = 
-        x.Combine (m, including)
 
 (* Operators
 
