@@ -105,6 +105,9 @@ type Freya<'a> =
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
+type FreyaConfiguration<'c> =
+    'c -> unit * 'c
+
 type Pipeline =
     Freya<PipelineChoice>
 
@@ -246,10 +249,39 @@ module Freya =
         let inline map o f =
             State.map (Optic.map o f)
 
+(* Freya Configuration
+
+   Functions for working with the Freya Configuration function, designed for
+   use in creating expression based builders. *)
+
+[<RequireQualifiedAccess>]
+module FreyaConfiguration =
+
+    (* Common *)
+
+    let bind (m: FreyaConfiguration<'c>, f: unit -> FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        fun c ->
+            f () (snd (m c))
+
+    let combine (m1: FreyaConfiguration<'c>, m2: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        fun c ->
+            m2 (snd (m1 c))
+
+    let init () : FreyaConfiguration<'c> =
+        fun c ->
+            (), c
+
+    let initFrom (m: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        m
+
+    let map (m: FreyaConfiguration<'c>, f: 'c -> 'c) : FreyaConfiguration<'c> =
+        fun c ->
+            (), f (snd (m c))
+
 (* Inference
 
    Pseudo-Typeclass based inference of various types, automatically converting
-   values of a variety of types to a specific core type, allowing APIs to be
+   values of these of types to a specific known core type, allowing APIs to be
    more concise where appropriate. *)
 
 [<RequireQualifiedAccess>]
@@ -332,11 +364,31 @@ module Pipeline =
         Freya.bind (Infer.pipeline p1, (function | Next -> Infer.pipeline p2
                                                  | _ -> halt))
 
-(* Expression
+(* Integration *)
 
-   The computation expression form of the basic Freya abstraction, the
-   async state function, giving an alternative syntax for people who would
-   prefer to avoid symbolic operators, etc. *)
+[<AutoOpen>]
+module Integration =
+
+    (* Types *)
+
+    type OwinEnvironment =
+        Environment
+
+    type OwinAppFunc = 
+        Func<OwinEnvironment, Task>
+
+    type OwinMidFunc =
+        Func<OwinAppFunc, OwinAppFunc>
+
+(* Builders
+
+   Computation expression builders for the common forms of function, the core
+   Freya function and the Freya Configuration function, with an associated
+   builder. The Freya Configuration function is not used directly, but is
+   expected to be subclassed for specific configuration builders, supplying
+   the type parameter. *)
+
+(* Freya *)
 
 type FreyaBuilder () =
 
@@ -361,21 +413,32 @@ type FreyaBuilder () =
 let freya =
     FreyaBuilder ()
 
-(* Integration *)
+(* Freya Configuration *)
 
-[<AutoOpen>]
-module Integration =
+type FreyaConfigurationBuilder<'c> () =
 
-    (* Types *)
+    member __.Bind (m: FreyaConfiguration<'c>, f: unit -> FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        FreyaConfiguration.bind (m, f)
 
-    type OwinEnvironment =
-        Environment
+    member __.Combine (m1: FreyaConfiguration<'c>, m2: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        FreyaConfiguration.combine (m1, m2)
 
-    type OwinAppFunc = 
-        Func<OwinEnvironment, Task>
+    member __.Return () : FreyaConfiguration<'c> =
+        FreyaConfiguration.init ()
 
-    type OwinMidFunc =
-        Func<OwinAppFunc, OwinAppFunc>
+    member __.ReturnFrom (m: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+        FreyaConfiguration.initFrom (m)
+
+    (* Extended *)
+
+    member __.Map (m: FreyaConfiguration<'c>, f: 'c -> 'c) : FreyaConfiguration<'c> =
+        FreyaConfiguration.map (m, f)
+
+    (* Syntax *)
+
+    [<CustomOperation ("including", MaintainsVariableSpaceUsingBind = true)>]
+    member x.Including (m, including) = 
+        x.Combine (m, including)
 
 (* Operators
 
