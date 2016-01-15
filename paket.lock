@@ -1,7 +1,7 @@
 NUGET
   remote: http://www.nuget.org/api/v2
   specs:
-    Aether (8.0.2)
+    Aether (8.1.0)
 
 GROUP Build
 NUGET
