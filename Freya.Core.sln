@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A5BF123D-95DD-4203-930C-89568CAE3FA7}"
 	ProjectSection(SolutionItems) = preProject
 		build.cmd = build.cmd
+		paket-files\build\xyncro\build\build.fsx = paket-files\build\xyncro\build\build.fsx
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{37B45443-D941-4367-A734-C370F9E121C9}"
@@ -34,6 +35,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC}"
 	ProjectSection(SolutionItems) = preProject
 		tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references = tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C38AA25-041C-48E6-9851-D2A0B2B69085}"
+	ProjectSection(SolutionItems) = preProject
+		src\Freya.Core\Freya.Core.fsproj.paket.template = src\Freya.Core\Freya.Core.fsproj.paket.template
 	EndProjectSection
 EndProject
 Global
@@ -62,5 +68,6 @@ Global
 		{A1454883-B97F-450F-A3CC-21AA9CF9779B} = {37B45443-D941-4367-A734-C370F9E121C9}
 		{3EB51D87-C821-40FC-9B29-72C5778167DC} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
 		{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC} = {37B45443-D941-4367-A734-C370F9E121C9}
+		{3C38AA25-041C-48E6-9851-D2A0B2B69085} = {28801462-331E-4567-B957-8ABC6A31F235}
 	EndGlobalSection
 EndGlobal

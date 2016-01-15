@@ -1,0 +1,23 @@
+﻿type project
+id
+    Freya.Core
+title
+    Freya.Core
+description
+    The core building blocks of the Freya web stack
+tags
+    functional, web, f#, freya
+version
+    4.0.0-alpha001
+owners
+    Andrew Cherry, Ryan Riley
+authors
+    Andrew Cherry, Ryan Riley
+copyright
+    Copyright Xyncro Ltd 2016
+projectUrl
+    https://xyncro.tech/freya
+licenseUrl
+    https://github.com/xyncro/freya-core/blob/master/LICENSE.md
+requireLicenseAcceptance
+    false

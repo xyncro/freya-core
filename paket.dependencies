@@ -1,6 +1,6 @@
 source http://nuget.org/api/v2
 
-nuget Aether ~> 8
+nuget Aether >= 8.1.0 < 9.0.0
 
 group Build
 

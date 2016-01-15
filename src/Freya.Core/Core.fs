@@ -37,6 +37,16 @@ module Prelude =
     let hashOn f x =
         hash (f x)
 
+    (* Common
+
+       Commonly used glue functions for shortening code. *)
+
+    let flip f a b =
+        f b a
+
+    let tuple a b =
+        a, b
+
     (* Dictionary
 
        Extensions and functions for working with generic dictionaries,
@@ -105,7 +115,7 @@ type Freya<'a> =
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
-type FreyaConfiguration<'c> =
+type Configuration<'c> =
     'c -> unit * 'c
 
 type Pipeline =
@@ -249,34 +259,30 @@ module Freya =
         let inline map o f =
             State.map (Optic.map o f)
 
-(* Freya Configuration
+(* Configuration
 
-   Functions for working with the Freya Configuration function, designed for
+   Functions for working with the Configuration function, designed for
    use in creating expression based builders. *)
 
 [<RequireQualifiedAccess>]
-module FreyaConfiguration =
+module Configuration =
 
     (* Common *)
 
-    let bind (m: FreyaConfiguration<'c>, f: unit -> FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
-        fun c ->
-            f () (snd (m c))
+    let bind (m: Configuration<'c>, f: unit -> Configuration<'c>) : Configuration<'c> =
+        m >> snd >> f ()
 
-    let combine (m1: FreyaConfiguration<'c>, m2: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
-        fun c ->
-            m2 (snd (m1 c))
+    let combine (m1: Configuration<'c>, m2: Configuration<'c>) : Configuration<'c> =
+        m1 >> snd >> m2
 
-    let init () : FreyaConfiguration<'c> =
-        fun c ->
-            (), c
+    let init () : Configuration<'c> =
+        tuple ()
 
-    let initFrom (m: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
+    let initFrom (m: Configuration<'c>) : Configuration<'c> =
         m
 
-    let map (m: FreyaConfiguration<'c>, f: 'c -> 'c) : FreyaConfiguration<'c> =
-        fun c ->
-            (), f (snd (m c))
+    let map (m: Configuration<'c>, f: 'c -> 'c) : Configuration<'c> =
+        m >> snd >> f >> tuple ()
 
 (* Inference
 
@@ -302,7 +308,7 @@ module Infer =
                 x
 
             static member Freya (_: unit) =
-                fun state -> async { return (), state }
+                fun s -> async { return (), s }
 
         let inline defaults (a: ^a, _: ^b) =
                 ((^a or ^b) : (static member Freya: ^a -> Freya<_>) a)
@@ -413,26 +419,26 @@ type FreyaBuilder () =
 let freya =
     FreyaBuilder ()
 
-(* Freya Configuration *)
+(* Configuration *)
 
-type FreyaConfigurationBuilder<'c> () =
+type ConfigurationBuilder<'c> () =
 
-    member __.Bind (m: FreyaConfiguration<'c>, f: unit -> FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
-        FreyaConfiguration.bind (m, f)
+    member __.Bind (m: Configuration<'c>, f: unit -> Configuration<'c>) : Configuration<'c> =
+        Configuration.bind (m, f)
 
-    member __.Combine (m1: FreyaConfiguration<'c>, m2: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
-        FreyaConfiguration.combine (m1, m2)
+    member __.Return () : Configuration<'c> =
+        Configuration.init ()
 
-    member __.Return () : FreyaConfiguration<'c> =
-        FreyaConfiguration.init ()
+    member __.ReturnFrom (m: Configuration<'c>) : Configuration<'c> =
+        Configuration.initFrom (m)
 
-    member __.ReturnFrom (m: FreyaConfiguration<'c>) : FreyaConfiguration<'c> =
-        FreyaConfiguration.initFrom (m)
+    member __.Combine (m1: Configuration<'c>, m2: Configuration<'c>) : Configuration<'c> =
+        Configuration.combine (m1, m2)
 
     (* Extended *)
 
-    member __.Map (m: FreyaConfiguration<'c>, f: 'c -> 'c) : FreyaConfiguration<'c> =
-        FreyaConfiguration.map (m, f)
+    member __.Map (m: Configuration<'c>, f: 'c -> 'c) : Configuration<'c> =
+        Configuration.map (m, f)
 
     (* Syntax *)
 
