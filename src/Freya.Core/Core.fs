@@ -6,6 +6,7 @@ open System.Threading.Tasks
 open Aether
 open Aether.Operators
 
+// TODO: Documentation
 // TODO: Integration functions
 // TODO: Recording? Decide on inclusion in Core
 // TODO: Testing - fuller coverage
