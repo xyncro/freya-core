@@ -257,6 +257,44 @@ module Freya =
         let inline map o f =
             State.map (Optic.map o f)
 
+(* Configuration
+
+   Components for building simple configuration builders, used to provide more
+   abstract syntax across Freya, particularly in Routers, Machines, etc. The
+   simple builder is supplied with an operations type defining how init
+   and bind are applied to the parameterised type of the builder. *)
+
+[<RequireQualifiedAccess>]
+module Configuration =
+
+    type Operations<'c> =
+        { Init: unit -> 'c
+          Bind: ('c * (unit -> 'c)) -> 'c }
+
+    (* Builder *)
+
+    type Builder<'c> (operations: Operations<'c>) =
+
+        member __.Return _ : 'c =
+            operations.Init ()
+
+        member __.ReturnFrom (c:  'c) : 'c =
+            c
+
+        member __.Bind (m: 'c, f: unit -> 'c) : 'c =
+            operations.Bind (m, f)
+
+        member __.Combine (m1: 'c, m2: 'c) : 'c =
+            operations.Bind (m1, (fun () -> m2))
+
+    (* Syntax *)
+
+    type Builder<'c> with
+
+        [<CustomOperation ("including", MaintainsVariableSpaceUsingBind = true)>]
+        member x.Including (m, configuration) = 
+            x.Combine (m, configuration)
+
 (* Inference
 
    Pseudo-Typeclass based inference of various types, automatically converting
