@@ -413,9 +413,11 @@ module Integration =
 
         [<CompiledName ("FromFreya")>]
         let inline ofFreya freya =
+            let freya = Infer.freya freya
+
             OwinAppFunc (fun e ->
                 Async.StartAsTask (
-                    Async.Ignore (Infer.freya freya (State.empty e))) :> Task)
+                    Async.Ignore (freya (State.empty e))) :> Task)
 
 (* Builders
 
