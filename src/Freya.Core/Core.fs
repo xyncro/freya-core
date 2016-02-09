@@ -106,6 +106,10 @@ type Freya<'a> =
         (fun x -> x.Meta), 
         (fun m x -> { x with Meta = m })
 
+    static member internal ofOwin e =
+        { Environment = e
+          Meta = MetaState.empty }
+
  and Environment =
     IDictionary<string, obj>
 
@@ -115,6 +119,9 @@ type Freya<'a> =
     static member internal memos_ =
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
+
+    static member empty =
+        { Memos = Map.empty }
 
 type Pipeline =
     Freya<PipelineChoice>
@@ -399,6 +406,16 @@ module Integration =
 
     type OwinMidFunc =
         Func<OwinAppFunc, OwinAppFunc>
+
+    [<RequireQualifiedAccess>]
+    [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
+    module OwinAppFunc =
+
+        [<CompiledName ("FromFreya")>]
+        let inline ofFreya freya =
+            OwinAppFunc (fun e ->
+                Async.StartAsTask (
+                    Async.Ignore (Infer.freya freya (State.ofOwin e))) :> Task)
 
 (* Builders
 
