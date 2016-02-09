@@ -106,7 +106,7 @@ type Freya<'a> =
         (fun x -> x.Meta), 
         (fun m x -> { x with Meta = m })
 
-    static member internal ofOwin e =
+    static member empty e =
         { Environment = e
           Meta = MetaState.empty }
 
@@ -415,7 +415,7 @@ module Integration =
         let inline ofFreya freya =
             OwinAppFunc (fun e ->
                 Async.StartAsTask (
-                    Async.Ignore (Infer.freya freya (State.ofOwin e))) :> Task)
+                    Async.Ignore (Infer.freya freya (State.empty e))) :> Task)
 
 (* Builders
 
