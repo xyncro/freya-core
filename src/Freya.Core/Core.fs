@@ -287,6 +287,9 @@ module Configuration =
         member __.Combine (m1: 'c, m2: 'c) : 'c =
             operations.Bind (m1, (fun () -> m2))
 
+        member __.Zero () : 'c =
+            operations.Init ()
+
     (* Syntax *)
 
     type Builder<'c> with
