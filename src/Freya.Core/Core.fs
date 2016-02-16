@@ -201,6 +201,11 @@ module Freya =
         fun s ->
             async.Return ((), s)
 
+    (* Basic *)
+
+    let empty : Freya<unit> =
+        init ()
+
     (* Extended *)
 
     let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
