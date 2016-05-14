@@ -57,7 +57,12 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="Prelude.fs" />
     <Compile Include="Core.fs" />
+    <Compile Include="Pipeline.fs" />
+    <Compile Include="Configuration.fs" />
+    <Compile Include="Integration.fs" />
+    <Compile Include="Operators.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
