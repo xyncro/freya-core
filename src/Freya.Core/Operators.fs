@@ -38,19 +38,19 @@ module Operators =
     let inline (<!>) f m =
         Freya.map (m, f)
 
-    (* State
+    (* Optic
 
        Operators for applying optic based functions to the State instance,
-       wrapping the Freya.State.* functionality. *)
+       wrapping the Freya.Optic.* functionality. *)
 
     let inline (!.) o =
-        Freya.State.get o
+        Freya.Optic.get o
 
     let inline (.=) o v =
-        Freya.State.set o v
+        Freya.Optic.set o v
 
     let inline (%=) o f =
-        Freya.State.map o f
+        Freya.Optic.map o f
 
     (* Pipeline
 

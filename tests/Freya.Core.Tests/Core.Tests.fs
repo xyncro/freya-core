@@ -47,14 +47,14 @@ let private key_ =
     Freya.State.value_ "key"
 
 [<Fact>]
-let ``Freya.State.get|set|map behave correctly`` () =
+let ``Freya.Optic.get|set|map behave correctly`` () =
     let m =
         freya {
-            do! Freya.State.set key_ (Some 42)
-            let! v1 = Freya.State.get key_
+            do! Freya.Optic.set key_ (Some 42)
+            let! v1 = Freya.Optic.get key_
 
-            do! Freya.State.map key_ (Option.map ((*) 2))
-            let! v2 = Freya.State.get key_
+            do! Freya.Optic.map key_ (Option.map ((*) 2))
+            let! v2 = Freya.Optic.get key_
 
             return v1, v2 }
 
