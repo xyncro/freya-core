@@ -90,12 +90,10 @@ module Freya =
 
     (* State
 
-       Basic optics and functions for accessing the State instance within a
-       Freya computation. The value_ optic provides a useful lens to a value
-       which may be present within the current environment.
-
-       The provided functions provide simple access for getting, setting and
-       mapping the current State instance. *)
+       Basic optics for accessing elements of the State instance within the
+       current Freya function. The value_ lens is provided for keyed access
+       to the OWIN dictionary, and the memo_ lens for keyed access to the
+       memo storage in the Meta instance. *)
 
     [<RequireQualifiedAccess>]
     module State =
@@ -106,6 +104,21 @@ module Freya =
                 State.environment_
             >-> Dict.value_<string,obj> k
             >-> Option.mapIsomorphism box_<'a>
+
+        let memo_<'a> i =
+                State.meta_
+            >-> Meta.memos_
+            >-> Map.value_ i
+            >-> Option.mapIsomorphism box_<'a>
+
+    (* Optic
+
+       Optic based access to the Freya computation state, analogous to the
+       Optic.* functions exposed by Aether, but working within a Freya function
+       and therefore part of the Freya ecosystem. *)
+
+    [<RequireQualifiedAccess>]
+    module Optic =
 
         (* Functions *)
 
@@ -199,22 +212,17 @@ module Freya =
        ensures that the function will be evaluated once per request/response
        on any given thread. *)
 
-    let private memo_<'a> i =
-            State.meta_
-        >-> Meta.memos_
-        >-> Map.value_ i
-        >-> Option.mapIsomorphism box_<'a>
 
     let memo<'a> (m: Freya<'a>) : Freya<'a> =
-        let memo_ = memo_<'a> (Guid.NewGuid ())
+        let memo_ = State.memo_<'a> (Guid.NewGuid ())
 
         fun s ->
-            match Optic.get memo_ s with
+            match Aether.Optic.get memo_ s with
             | Some memo ->
                 async.Return (memo, s)
             | _ ->
                 async.Bind (m s, fun (memo, s) ->
-                    async.Return (memo, Optic.set memo_ (Some memo) s))
+                    async.Return (memo, Aether.Optic.set memo_ (Some memo) s))
 
 (* Expression
 
