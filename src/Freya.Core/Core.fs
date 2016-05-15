@@ -212,7 +212,6 @@ module Freya =
        ensures that the function will be evaluated once per request/response
        on any given thread. *)
 
-
     let memo<'a> (m: Freya<'a>) : Freya<'a> =
         let memo_ = State.memo_<'a> (Guid.NewGuid ())
 
@@ -223,34 +222,3 @@ module Freya =
             | _ ->
                 async.Bind (m s, fun (memo, s) ->
                     async.Return (memo, Aether.Optic.set memo_ (Some memo) s))
-
-(* Expression
-
-   A simple computation expression for working with Freya functions as an
-   alternative to the function/operator based syntax also available. *)
-
-[<AutoOpen>]
-module Expression =
-
-    type FreyaBuilder () =
-
-        member __.Bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
-            Freya.bind (m, f)
-
-        member __.Delay (f: unit -> Freya<'a>) : Freya<'a> =
-            Freya.delay (f)
-
-        member __.Return (a: 'a) : Freya<'a> =
-            Freya.init (a)
-
-        member __.ReturnFrom (m: Freya<'a>) : Freya<'a> =
-            Freya.initFrom (m)
-
-        member __.Combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
-            Freya.combine (m1, m2)
-
-        member __.Zero () : Freya<unit> =
-            Freya.zero ()
-
-    let freya =
-        FreyaBuilder ()
