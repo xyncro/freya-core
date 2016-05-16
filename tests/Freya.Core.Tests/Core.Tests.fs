@@ -44,7 +44,7 @@ let ``Freya.init and Freya.apply behave correctly`` () =
    enabling optic based operations on the underlying state. *)
 
 let private key_ =
-    Freya.State.value_ "key"
+    State.value_ "key"
 
 [<Fact>]
 let ``Freya.Optic.get|set|map behave correctly`` () =

@@ -50,6 +50,30 @@ type Freya<'a> =
     static member empty =
         { Memos = Map.empty }
 
+(* State
+
+   Basic optics for accessing elements of the State instance within the
+   current Freya function. The value_ lens is provided for keyed access
+   to the OWIN dictionary, and the memo_ lens for keyed access to the
+   memo storage in the Meta instance. *)
+
+[<RequireQualifiedAccess>]
+[<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
+module State =
+
+    (* Optics *)
+
+    let value_<'a> k =
+            State.environment_
+        >-> Dict.value_<string,obj> k
+        >-> Option.mapIsomorphism box_<'a>
+
+    let memo_<'a> i =
+            State.meta_
+        >-> Meta.memos_
+        >-> Map.value_ i
+        >-> Option.mapIsomorphism box_<'a>
+
 (* Freya
 
    Functions and type tools for working with Freya abstractions, particularly
@@ -88,28 +112,7 @@ module Freya =
     let inline infer x =
         Inference.infer x
 
-    (* State
 
-       Basic optics for accessing elements of the State instance within the
-       current Freya function. The value_ lens is provided for keyed access
-       to the OWIN dictionary, and the memo_ lens for keyed access to the
-       memo storage in the Meta instance. *)
-
-    [<RequireQualifiedAccess>]
-    module State =
-
-        (* Optics *)
-
-        let value_<'a> k =
-                State.environment_
-            >-> Dict.value_<string,obj> k
-            >-> Option.mapIsomorphism box_<'a>
-
-        let memo_<'a> i =
-                State.meta_
-            >-> Meta.memos_
-            >-> Map.value_ i
-            >-> Option.mapIsomorphism box_<'a>
 
     (* Optic
 
