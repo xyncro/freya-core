@@ -61,6 +61,7 @@
     <Compile Include="Core.fs" />
     <Compile Include="Pipeline.fs" />
     <Compile Include="Configuration.fs" />
+    <Compile Include="Inference.fs" />
     <Compile Include="Expression.fs" />
     <Compile Include="Integration.fs" />
     <Compile Include="Operators.fs" />

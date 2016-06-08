@@ -84,36 +84,6 @@ module State =
 [<RequireQualifiedAccess>]
 module Freya =
 
-    (* Inference
-
-       The basic framework for compile time static inference of types which
-       support the correct member functions. The module level types and
-       functions are not expected to be used, consumers should use
-       Freya.infer over Freya.Inference.infer. *)
-
-    [<RequireQualifiedAccess>]
-    module Inference =
-
-        type Defaults =
-            | Defaults
-
-            static member Freya (x: Freya<_>) =
-                x
-
-            static member Freya (_: unit) =
-                fun s -> async { return (), s }
-
-        let inline defaults (a: ^a, _: ^b) =
-                ((^a or ^b) : (static member Freya: ^a -> Freya<_>) a)
-
-        let inline infer (x: 'a) =
-            defaults (x, Defaults)
-
-    let inline infer x =
-        Inference.infer x
-
-
-
     (* Optic
 
        Optic based access to the Freya computation state, analogous to the
