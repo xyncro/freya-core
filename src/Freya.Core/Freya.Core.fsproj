@@ -65,6 +65,7 @@
     <Compile Include="Expression.fs" />
     <Compile Include="Integration.fs" />
     <Compile Include="Operators.fs" />
+    <Compile Include="Obsolete.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />

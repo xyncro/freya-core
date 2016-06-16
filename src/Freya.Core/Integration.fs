@@ -36,7 +36,9 @@ module OwinAppFunc =
 
     [<CompiledName ("FromFreya")>]
     let inline ofFreya freya =
-        let freya = Freya.infer freya
+        
+        let freya =
+            Freya.infer freya
 
         OwinAppFunc (fun e ->
             Async.StartAsTask (
