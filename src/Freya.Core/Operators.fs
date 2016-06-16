@@ -70,14 +70,17 @@ module Operators =
 
        To be removed for 4.x releases. *)
 
-    [<Obsolete ("Use !. instead.")>]
-    let inline (!?.) o =
-        Freya.Optic.get o
+    [<AutoOpen>]
+    module Obsolete =
 
-    [<Obsolete ("Use .= instead.")>]
-    let inline (.?=) o v =
-        Freya.Optic.set o v
+        [<Obsolete ("Use !. instead.")>]
+        let inline (!?.) o =
+            Freya.Optic.get o
 
-    [<Obsolete ("Use %= instead.")>]
-    let inline (%?=) o f =
-        Freya.Optic.map o f
+        [<Obsolete ("Use .= instead.")>]
+        let inline (.?=) o v =
+            Freya.Optic.set o v
+
+        [<Obsolete ("Use %= instead.")>]
+        let inline (%?=) o f =
+            Freya.Optic.map o f
