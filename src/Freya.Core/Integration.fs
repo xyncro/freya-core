@@ -26,16 +26,15 @@ type OwinMidFunc =
 
 (* OwinAppFunc
 
-   Functions for mapping to/from the OwinAppFunc signature given Freya
-   functions, using static inference to allow any type which implements
-   the appropriate member function to be used. *)
+   Functions for working with OWIN types, in this case OwinAppFunc, allowing
+   the conversion of a Freya<_> function to an OwinAppFunc. *)
 
 [<RequireQualifiedAccess>]
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module OwinAppFunc =
 
     [<CompiledName ("FromFreya")>]
-    let inline ofFreya freya =
+    let inline ofFreya freya : OwinAppFunc =
         
         let freya =
             Freya.infer freya
@@ -43,3 +42,23 @@ module OwinAppFunc =
         OwinAppFunc (fun e ->
             Async.StartAsTask (
                 Async.Ignore (freya (State.create e))) :> Task)
+
+(* OwinMidFunc
+
+   Functions for working with OWIN types, in this case OwinMidFunc, allowing
+   the conversion of a Freya<_> function to an OwinMidFunc. *)
+
+[<RequireQualifiedAccess>]
+[<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
+module OwinMidFunc =
+
+    [<CompiledName ("FromFreya")>]
+    let inline ofFreya freya : OwinMidFunc =
+
+        let freya =
+            Freya.infer freya
+
+        OwinMidFunc (fun n ->
+            OwinAppFunc (fun e ->
+                async.Bind (freya (State.create e), fun (_, s) ->
+                    Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
