@@ -5,7 +5,7 @@ NUGET
 GROUP Build
 NUGET
   remote: http://www.nuget.org/api/v2
-    FAKE (4.28)
+    FAKE (4.32)
 GITHUB
   remote: xyncro/build
     build.fsx (589ed49e68b51d7de9e9de9be1adc30e26ce534d)
