@@ -3,6 +3,13 @@
 open System
 open System.Threading.Tasks
 
+#if Hopac
+
+open Hopac
+open Hopac.Extensions
+
+#endif
+
 (* Integration
 
    Utility functionality for integrating the Freya model of computation with
@@ -35,13 +42,24 @@ module OwinAppFunc =
 
     [<CompiledName ("FromFreya")>]
     let inline ofFreya freya : OwinAppFunc =
-        
+
         let freya =
             Freya.infer freya
+
+#if Hopac
+
+        OwinAppFunc (fun e ->
+            Async.StartAsTask (
+                Async.Ignore (
+                    Async.Global.ofJob (freya (State.create e)))) :> Task)
+
+#else
 
         OwinAppFunc (fun e ->
             Async.StartAsTask (
                 Async.Ignore (freya (State.create e))) :> Task)
+
+#endif
 
 (* OwinMidFunc
 
@@ -58,7 +76,18 @@ module OwinMidFunc =
         let freya =
             Freya.infer freya
 
+#if Hopac
+
+        OwinMidFunc (fun n ->
+            OwinAppFunc (fun e ->
+                async.Bind (Async.Global.ofJob (freya (State.create e)), fun (_, s) ->
+                    Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
+
+#else
+
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
                 async.Bind (freya (State.create e), fun (_, s) ->
                     Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
+
+#endif

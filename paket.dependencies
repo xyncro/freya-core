@@ -1,13 +1,28 @@
-source http://nuget.org/api/v2
+// Core
 
-nuget Aether ~> 8.1
+group Common
+
+  source http://nuget.org/api/v2
+
+  nuget Aether ~> 8.1
+
+group Hopac
+
+  source http://nuget.org/api/v2
+
+  nuget Hopac ~> 0
+
+// Build
 
 group Build
 
+  framework: >= net45
   source http://nuget.org/api/v2
 
   nuget Fake
   github xyncro/build build.fsx
+
+// Test
 
 group Test
 
@@ -17,4 +32,3 @@ group Test
   nuget Unquote
   nuget xunit
   nuget xunit.runner.console
-

@@ -2,7 +2,6 @@
 
   Aether
 
-group Test
+group Hopac
 
-  Unquote
-  xunit
+  Hopac

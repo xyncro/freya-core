@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}"
 EndProject
@@ -27,19 +27,26 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A1454883-B97F-450F-A3CC-21AA9CF9779B}"
 	ProjectSection(SolutionItems) = preProject
 		src\Freya.Core\Freya.Core.fsproj.paket.references = src\Freya.Core\Freya.Core.fsproj.paket.references
+		src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.references = src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.references
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Tests", "tests\Freya.Core.Tests\Freya.Core.Tests.fsproj", "{3EB51D87-C821-40FC-9B29-72C5778167DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC}"
 	ProjectSection(SolutionItems) = preProject
+		tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj.paket.references = tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj.paket.references
 		tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references = tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C38AA25-041C-48E6-9851-D2A0B2B69085}"
 	ProjectSection(SolutionItems) = preProject
 		src\Freya.Core\Freya.Core.fsproj.paket.template = src\Freya.Core\Freya.Core.fsproj.paket.template
+		src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.template = src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.template
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Hopac", "src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj", "{A9268C20-CD16-4E50-9878-1CC0EB8465A1}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Hopac.Tests", "tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj", "{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +62,14 @@ Global
 		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3EB51D87-C821-40FC-9B29-72C5778167DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +83,7 @@ Global
 		{3EB51D87-C821-40FC-9B29-72C5778167DC} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
 		{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC} = {37B45443-D941-4367-A734-C370F9E121C9}
 		{3C38AA25-041C-48E6-9851-D2A0B2B69085} = {28801462-331E-4567-B957-8ABC6A31F235}
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1} = {6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
 	EndGlobalSection
 EndGlobal

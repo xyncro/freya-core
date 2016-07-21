@@ -5,6 +5,12 @@ open Freya.Core
 open Swensen.Unquote
 open Xunit
 
+#if Hopac
+
+open Hopac
+
+#endif
+
 (* Prelude
 
    Helper functions to make running tests against the Freya function simpler,
@@ -23,8 +29,17 @@ let private state () =
     { Environment = environment ()
       Meta = meta () }
 
+#if Hopac
+
+let private run f =
+    Job.Global.run (f (state ()))
+
+#else
+
 let private run f =
     Async.RunSynchronously (f (state ()))
+
+#endif
 
 (* Common
 
