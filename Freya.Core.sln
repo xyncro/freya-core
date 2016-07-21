@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sln", "sln", "{8854178D-46EB-468E-A90D-9F78A152C6D2}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{A5BF123D-95DD-4203-930C-89568CAE3FA7}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,33 +16,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencie
 		paket.lock = paket.lock
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packages", "packages", "{28801462-331E-4567-B957-8ABC6A31F235}"
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core", "src\Freya.Core\Freya.Core.fsproj", "{CE8119B8-0D72-4911-BD3B-7E2E1B276418}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A1454883-B97F-450F-A3CC-21AA9CF9779B}"
-	ProjectSection(SolutionItems) = preProject
-		src\Freya.Core\Freya.Core.fsproj.paket.references = src\Freya.Core\Freya.Core.fsproj.paket.references
-		src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.references = src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.references
-	EndProjectSection
-EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Tests", "tests\Freya.Core.Tests\Freya.Core.Tests.fsproj", "{3EB51D87-C821-40FC-9B29-72C5778167DC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC}"
-	ProjectSection(SolutionItems) = preProject
-		tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj.paket.references = tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj.paket.references
-		tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references = tests\Freya.Core.Tests\Freya.Core.Tests.fsproj.paket.references
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3C38AA25-041C-48E6-9851-D2A0B2B69085}"
-	ProjectSection(SolutionItems) = preProject
-		src\Freya.Core\Freya.Core.fsproj.paket.template = src\Freya.Core\Freya.Core.fsproj.paket.template
-		src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.template = src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj.paket.template
-	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Hopac", "src\Freya.Core.Hopac\Freya.Core.Hopac.fsproj", "{A9268C20-CD16-4E50-9878-1CC0EB8465A1}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Freya.Core.Hopac.Tests", "tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj", "{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "variants", "variants", "{E00BC2C8-57A6-4316-A529-ED6455984491}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "async", "async", "{E27895D3-E160-4E45-820A-3C54448624FB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hopac", "hopac", "{A5DBE1E6-432D-4869-ACE9-50807C08D3BE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{71282F48-85E8-4775-B11A-68A792799C2C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3A507839-6C51-4A50-87C9-8E61F9B25B7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8E88169C-E112-4B0F-B30B-36F07DB44598}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{61E2077B-D4EF-48AF-B94E-87B848E2D2DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,13 +67,15 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A5BF123D-95DD-4203-930C-89568CAE3FA7} = {8854178D-46EB-468E-A90D-9F78A152C6D2}
 		{37B45443-D941-4367-A734-C370F9E121C9} = {8854178D-46EB-468E-A90D-9F78A152C6D2}
-		{28801462-331E-4567-B957-8ABC6A31F235} = {8854178D-46EB-468E-A90D-9F78A152C6D2}
-		{CE8119B8-0D72-4911-BD3B-7E2E1B276418} = {6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}
-		{A1454883-B97F-450F-A3CC-21AA9CF9779B} = {37B45443-D941-4367-A734-C370F9E121C9}
-		{3EB51D87-C821-40FC-9B29-72C5778167DC} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
-		{6B6DB737-3D40-42F1-960E-E1CB2E3E47AC} = {37B45443-D941-4367-A734-C370F9E121C9}
-		{3C38AA25-041C-48E6-9851-D2A0B2B69085} = {28801462-331E-4567-B957-8ABC6A31F235}
-		{A9268C20-CD16-4E50-9878-1CC0EB8465A1} = {6F89B11F-CC2B-4FDE-BE80-C546409CDDB6}
-		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46} = {E9EEE1B9-A30A-4B10-AFA8-32165558AFB4}
+		{CE8119B8-0D72-4911-BD3B-7E2E1B276418} = {71282F48-85E8-4775-B11A-68A792799C2C}
+		{3EB51D87-C821-40FC-9B29-72C5778167DC} = {61E2077B-D4EF-48AF-B94E-87B848E2D2DC}
+		{A9268C20-CD16-4E50-9878-1CC0EB8465A1} = {3A507839-6C51-4A50-87C9-8E61F9B25B7C}
+		{4DEC8B04-2B39-463A-B015-4D8A0F9B2E46} = {8E88169C-E112-4B0F-B30B-36F07DB44598}
+		{E27895D3-E160-4E45-820A-3C54448624FB} = {E00BC2C8-57A6-4316-A529-ED6455984491}
+		{A5DBE1E6-432D-4869-ACE9-50807C08D3BE} = {E00BC2C8-57A6-4316-A529-ED6455984491}
+		{71282F48-85E8-4775-B11A-68A792799C2C} = {E27895D3-E160-4E45-820A-3C54448624FB}
+		{3A507839-6C51-4A50-87C9-8E61F9B25B7C} = {A5DBE1E6-432D-4869-ACE9-50807C08D3BE}
+		{8E88169C-E112-4B0F-B30B-36F07DB44598} = {A5DBE1E6-432D-4869-ACE9-50807C08D3BE}
+		{61E2077B-D4EF-48AF-B94E-87B848E2D2DC} = {E27895D3-E160-4E45-820A-3C54448624FB}
 	EndGlobalSection
 EndGlobal
