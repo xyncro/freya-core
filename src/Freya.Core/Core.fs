@@ -79,6 +79,11 @@ module State =
 
     (* Optics *)
 
+    let key_<'a> k =
+            State.environment_
+        >-> Dict.key_<string,obj> k
+        >?> box_<'a>
+
     let value_<'a> k =
             State.environment_
         >-> Dict.value_<string,obj> k

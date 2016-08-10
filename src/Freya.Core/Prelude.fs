@@ -49,6 +49,16 @@ module Common =
 [<RequireQualifiedAccess>]
 module Dict =
 
+    let key_<'k,'v when 'v: null> k : Prism<IDictionary<'k,'v>,'v> =
+        (fun d ->
+            match d.TryGetValue k with
+            | false, _ | true, null -> None
+            | true, v -> Some v),
+        (fun v d ->
+            match d.ContainsKey k with
+            | true -> d.[k] <- v; d
+            | _ -> d)
+
     let value_<'k,'v when 'v: null> k : Lens<IDictionary<'k,'v>,'v option> =
         (fun d ->
             match d.TryGetValue k with
