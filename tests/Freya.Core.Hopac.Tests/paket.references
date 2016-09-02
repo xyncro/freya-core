@@ -1,0 +1,12 @@
+﻿group Common
+
+  Aether
+
+group Hopac
+
+  Hopac
+
+group Test
+
+  Unquote
+  xunit

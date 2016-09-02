@@ -5,14 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>3eb51d87-c821-40fc-9b29-72c5778167dc</ProjectGuid>
+    <ProjectGuid>a9268c20-cd16-4e50-9878-1cc0eb8465a1</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Freya.Core.Tests</RootNamespace>
-    <AssemblyName>Freya.Core.Tests</AssemblyName>
+    <RootNamespace>Freya.Core.Hopac</RootNamespace>
+    <AssemblyName>Freya.Core.Hopac</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Name>Freya.Core.Tests</Name>
+    <Name>Freya.Core.Hopac</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,18 +20,20 @@
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;Hopac</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Debug\Freya.Core.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Freya.Core.Hopac.XML</DocumentationFile>
+    <OtherFlags>
+    </OtherFlags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;Hopac</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>bin\Release\Freya.Core.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Freya.Core.Hopac.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>
@@ -79,52 +81,18 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
       <ItemGroup>
-        <Reference Include="Unquote">
-          <HintPath>..\..\packages\test\Unquote\lib\net45\Unquote.dll</HintPath>
+        <Reference Include="Hopac.Core">
+          <HintPath>..\..\packages\hopac\Hopac\lib\net45\Hopac.Core.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
-      <ItemGroup>
-        <Reference Include="xunit.abstractions">
-          <HintPath>..\..\packages\test\xunit.abstractions\lib\net35\xunit.abstractions.dll</HintPath>
+        <Reference Include="Hopac.Platform">
+          <HintPath>..\..\packages\hopac\Hopac\lib\net45\Hopac.Platform.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
-      <ItemGroup>
-        <Reference Include="xunit.assert">
-          <HintPath>..\..\packages\test\xunit.assert\lib\portable-net45+win8+wp8+wpa81\xunit.assert.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
-      <ItemGroup>
-        <Reference Include="xunit.core">
-          <HintPath>..\..\packages\test\xunit.extensibility.core\lib\portable-net45+win8+wp8+wpa81\xunit.core.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3')">
-      <ItemGroup>
-        <Reference Include="xunit.execution.desktop">
-          <HintPath>..\..\packages\test\xunit.extensibility.execution\lib\net45\xunit.execution.desktop.dll</HintPath>
+        <Reference Include="Hopac">
+          <HintPath>..\..\packages\hopac\Hopac\lib\net45\Hopac.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -132,25 +100,43 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="Core.Tests.fs" />
-    <Content Include="App.config" />
+    <Compile Include="..\Freya.Core\Prelude.fs">
+      <Link>Prelude.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Core.fs">
+      <Link>Core.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Pipeline.fs">
+      <Link>Pipeline.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Configuration.fs">
+      <Link>Configuration.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Inference.fs">
+      <Link>Inference.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Expression.fs">
+      <Link>Expression.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Integration.fs">
+      <Link>Integration.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Operators.fs">
+      <Link>Operators.fs</Link>
+    </Compile>
+    <Compile Include="..\Freya.Core\Obsolete.fs">
+      <Link>Obsolete.fs</Link>
+    </Compile>
     <None Include="paket.references" />
+    <None Include="paket.template" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FSharp.Data.TypeProviders" />
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Numerics" />
-    <ProjectReference Include="..\..\src\Freya.Core\Freya.Core.fsproj">
-      <Name>Freya.Core</Name>
-      <Project>{ce8119b8-0d72-4911-bd3b-7e2e1b276418}</Project>
-      <Private>True</Private>
-    </ProjectReference>
   </ItemGroup>
 </Project>

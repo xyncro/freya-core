@@ -5,6 +5,13 @@ open System.Collections.Generic
 open Aether
 open Aether.Operators
 
+#if Hopac
+
+open Hopac
+open Hopac.Extensions
+
+#endif
+
 (* Core
 
    The common elements of all Freya based systems, namely the basic abstraction
@@ -17,8 +24,17 @@ open Aether.Operators
    execution and composition, including the core async state carrying
    abstraction. *)
 
+#if Hopac
+
+type Freya<'a> =
+    State -> Job<'a * State>
+
+#else
+
 type Freya<'a> =
     State -> Async<'a * State>
+
+#endif
 
  and State =
     { Environment: Environment
@@ -63,6 +79,11 @@ module State =
 
     (* Optics *)
 
+    let key_<'a> k =
+            State.environment_
+        >-> Dict.key_<string,obj> k
+        >?> box_<'a>
+
     let value_<'a> k =
             State.environment_
         >-> Dict.value_<string,obj> k
@@ -84,36 +105,6 @@ module State =
 [<RequireQualifiedAccess>]
 module Freya =
 
-    (* Inference
-
-       The basic framework for compile time static inference of types which
-       support the correct member functions. The module level types and
-       functions are not expected to be used, consumers should use
-       Freya.infer over Freya.Inference.infer. *)
-
-    [<RequireQualifiedAccess>]
-    module Inference =
-
-        type Defaults =
-            | Defaults
-
-            static member Freya (x: Freya<_>) =
-                x
-
-            static member Freya (_: unit) =
-                fun s -> async { return (), s }
-
-        let inline defaults (a: ^a, _: ^b) =
-                ((^a or ^b) : (static member Freya: ^a -> Freya<_>) a)
-
-        let inline infer (x: 'a) =
-            defaults (x, Defaults)
-
-    let inline infer x =
-        Inference.infer x
-
-
-
     (* Optic
 
        Optic based access to the Freya computation state, analogous to the
@@ -124,6 +115,22 @@ module Freya =
     module Optic =
 
         (* Functions *)
+
+#if Hopac
+
+        let inline get o =
+            fun s ->
+                Job.result (Optic.get o s, s)
+
+        let inline set o v =
+            fun s ->
+                Job.result ((), Optic.set o v s)
+
+        let inline map o f =
+            fun s ->
+                Job.result ((), Optic.map o f s)
+
+#else
 
         let inline get o =
             fun s ->
@@ -137,12 +144,55 @@ module Freya =
             fun s ->
                 async.Return ((), Optic.map o f s)
 
+#endif
+
     (* Common
 
        Commonly defined functions against the Freya types, particularly the
        usual monadic functions (bind, apply, etc.). These are commonly used
        directly within Freya programming but are also used within the Freya
        computation expression defined later. *)
+
+#if Hopac
+
+    let apply (m: Freya<'a>, f: Freya<'a -> 'b>) : Freya<'b> =
+        fun s ->
+            Job.bind (fun (f, s) ->
+                Job.bind (fun (a, s) ->
+                    Job.result (f a, s)) (m s)) (f s)
+
+    let bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
+        fun s ->
+            Job.bind (fun (a, s) ->
+                f a s) (m s)
+
+    let combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
+        fun s ->
+            Job.bind (fun (_, s) ->
+                m2 s) (m1 s)
+
+    let delay (f: unit -> Freya<'a>) : Freya<'a> =
+        fun s ->
+            Job.bind (fun (a, s) ->
+                Job.result (a, s)) (f () s)
+
+    let init (a: 'a) : Freya<'a> =
+        fun s ->
+            Job.result (a, s)
+
+    let initFrom (m: Freya<'a>) : Freya<'a> =
+        m
+
+    let map (m: Freya<'a>, f: 'a -> 'b) : Freya<'b> =
+        fun s ->
+            Job.bind (fun (a, s) ->
+                Job.result (f a, s)) (m s)
+
+    let zero () : Freya<unit> =
+        fun s ->
+            Job.result ((), s)
+
+#else
 
     let apply (m: Freya<'a>, f: Freya<'a -> 'b>) : Freya<'b> =
         fun s ->
@@ -181,6 +231,8 @@ module Freya =
         fun s ->
             async.Return ((), s)
 
+#endif
+
     (* Empty
 
        A simple convenience instance of an empty Freya function, returning
@@ -196,6 +248,21 @@ module Freya =
        usual set of functions defined against Freya. In this case, interop with
        the basic F# async system, and extended dual map function are given. *)
 
+#if Hopac
+
+    let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
+        fun s ->
+            Job.bind (fun (b) ->
+                Job.result (b, s)) (Async.toJob (f a))
+
+    let map2 (f: 'a -> 'b -> 'c, m1: Freya<'a>, m2: Freya<'b>) : Freya<'c> =
+        fun s ->
+            Job.bind (fun (a, s) ->
+                Job.bind (fun (b, s)->
+                    Job.result (f a b, s)) (m2 s)) (m1 s)
+
+#else
+
     let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
         fun s ->
             async.Bind (f a, fun b ->
@@ -207,6 +274,8 @@ module Freya =
                 async.Bind (m2 s, fun (b, s) ->
                     async.Return (f a b, s)))
 
+#endif
+
     (* Memoisation
 
        A simple function supporting memoisation of parameterless Freya
@@ -214,6 +283,21 @@ module Freya =
        cache the result of the function in the Environment instance. This
        ensures that the function will be evaluated once per request/response
        on any given thread. *)
+
+#if Hopac
+
+    let memo<'a> (m: Freya<'a>) : Freya<'a> =
+        let memo_ = State.memo_<'a> (Guid.NewGuid ())
+
+        fun s ->
+            match Aether.Optic.get memo_ s with
+            | Some memo ->
+                Job.result (memo, s)
+            | _ ->
+                Job.bind (fun (memo, s) ->
+                    Job.result (memo, Aether.Optic.set memo_ (Some memo) s)) (m s)
+
+#else
 
     let memo<'a> (m: Freya<'a>) : Freya<'a> =
         let memo_ = State.memo_<'a> (Guid.NewGuid ())
@@ -225,3 +309,5 @@ module Freya =
             | _ ->
                 async.Bind (m s, fun (memo, s) ->
                     async.Return (memo, Aether.Optic.set memo_ (Some memo) s))
+
+#endif
