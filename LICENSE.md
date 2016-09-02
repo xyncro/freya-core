@@ -1,8 +1,8 @@
 # Apache 2.0
 
-Copyright 2014
+Copyright 2013-2016
 
-    Ryan Riley (@panesofglass) and Andrew Cherry (@kolektiv)
+    Andrew Cherry (@kolektiv) and Ryan Riley (@panesofglass)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
