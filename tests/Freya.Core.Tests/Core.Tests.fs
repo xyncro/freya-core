@@ -32,7 +32,7 @@ let private state () =
 #if Hopac
 
 let private run f =
-    Job.Global.run (f (state ()))
+    Hopac.run (f (state ()))
 
 #else
 

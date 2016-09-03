@@ -253,7 +253,7 @@ module Freya =
     let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
         fun s ->
             Job.bind (fun (b) ->
-                Job.result (b, s)) (Async.toJob (f a))
+                Job.result (b, s)) (Job.fromAsync (f a))
 
     let map2 (f: 'a -> 'b -> 'c, m1: Freya<'a>, m2: Freya<'b>) : Freya<'c> =
         fun s ->

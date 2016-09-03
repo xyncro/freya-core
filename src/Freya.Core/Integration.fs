@@ -51,7 +51,7 @@ module OwinAppFunc =
         OwinAppFunc (fun e ->
             Async.StartAsTask (
                 Async.Ignore (
-                    Async.Global.ofJob (freya (State.create e)))) :> Task)
+                    Job.toAsync (freya (State.create e)))) :> Task)
 
 #else
 
@@ -80,7 +80,7 @@ module OwinMidFunc =
 
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
-                async.Bind (Async.Global.ofJob (freya (State.create e)), fun (_, s) ->
+                async.Bind (Job.toAsync (freya (State.create e)), fun (_, s) ->
                     Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
 
 #else
