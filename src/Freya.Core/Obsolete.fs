@@ -101,3 +101,19 @@ module Obsolete =
             [<Obsolete ("Use Freya.Optic.map instead.")>]
             let inline mapPartial l f =
                 Freya.Optic.map l f
+
+        [<RequireQualifiedAccess>]
+        [<Obsolete ("Use Freya.Optic module functions instead.")>]
+        module State =
+
+            [<Obsolete ("Use Freya.Optic.get id_ instead.")>]
+            let get : Freya<State> =
+                Freya.Optic.get id_
+
+            [<Obsolete ("Use Freya.Optic.set id_ instead.")>]
+            let set : State -> Freya<unit> =
+                Freya.Optic.set id_
+
+            [<Obsolete ("Use Freya.Optic.map id_ instead.")>]
+            let map : (State -> State) -> Freya<unit> =
+                Freya.Optic.map id_
