@@ -173,8 +173,7 @@ module Freya =
 
     let delay (f: unit -> Freya<'a>) : Freya<'a> =
         fun s ->
-            Job.bind (fun (a, s) ->
-                Job.result (a, s)) (f () s)
+            f () s
 
     let init (a: 'a) : Freya<'a> =
         fun s ->
