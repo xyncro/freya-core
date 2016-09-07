@@ -158,8 +158,8 @@ module Freya =
     let apply (m: Freya<'a>, f: Freya<'a -> 'b>) : Freya<'b> =
         fun s ->
             Job.bind (fun (f, s) ->
-                Job.bind (fun (a, s) ->
-                    Job.result (f a, s)) (m s)) (f s)
+                Job.map (fun (a, s) ->
+                    (f a, s)) (m s)) (f s)
 
     let bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
         fun s ->
@@ -184,8 +184,8 @@ module Freya =
 
     let map (m: Freya<'a>, f: 'a -> 'b) : Freya<'b> =
         fun s ->
-            Job.bind (fun (a, s) ->
-                Job.result (f a, s)) (m s)
+            Job.map (fun (a, s) ->
+                (f a, s)) (m s)
 
     let zero () : Freya<unit> =
         fun s ->
@@ -250,14 +250,14 @@ module Freya =
 
     let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
         fun s ->
-            Job.bind (fun (b) ->
-                Job.result (b, s)) (Job.fromAsync (f a))
+            Job.map (fun b ->
+                (b, s)) (Job.fromAsync (f a))
 
     let map2 (f: 'a -> 'b -> 'c, m1: Freya<'a>, m2: Freya<'b>) : Freya<'c> =
         fun s ->
             Job.bind (fun (a, s) ->
-                Job.bind (fun (b, s)->
-                    Job.result (f a b, s)) (m2 s)) (m1 s)
+                Job.map (fun (b, s)->
+                    (f a b, s)) (m2 s)) (m1 s)
 
 #else
 
@@ -292,8 +292,8 @@ module Freya =
             | Some memo ->
                 Job.result (memo, s)
             | _ ->
-                Job.bind (fun (memo, s) ->
-                    Job.result (memo, Aether.Optic.set memo_ (Some memo) s)) (m s)
+                Job.map (fun (memo, s) ->
+                    (memo, Aether.Optic.set memo_ (Some memo) s)) (m s)
 
 #else
 
