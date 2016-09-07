@@ -56,8 +56,7 @@ module OwinAppFunc =
 #else
 
         OwinAppFunc (fun e ->
-            Async.StartAsTask (
-                Async.Ignore (freya (State.create e))) :> Task)
+            Async.StartAsTask (freya (State.create e)) :> Task)
 
 #endif
 
