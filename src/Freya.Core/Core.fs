@@ -212,8 +212,7 @@ module Freya =
 
     let delay (f: unit -> Freya<'a>) : Freya<'a> =
         fun s ->
-            async.Bind (f () s, fun (a, s) ->
-                async.Return (a, s))
+            f () s
 
     let init (a: 'a) : Freya<'a> =
         fun s ->
