@@ -46,15 +46,18 @@ module OwinAppFunc =
         let freya =
             Freya.infer freya
 
+        let init =
+            State.create >> freya
+
 #if Hopac
 
         OwinAppFunc (fun e ->
-            Hopac.startAsTask (freya (State.create e)) :> Task)
+            Hopac.startAsTask (init e) :> Task)
 
 #else
 
         OwinAppFunc (fun e ->
-            Async.StartAsTask (freya (State.create e)) :> Task)
+            Async.StartAsTask (init e) :> Task)
 
 #endif
 
@@ -73,20 +76,23 @@ module OwinMidFunc =
         let freya =
             Freya.infer freya
 
+        let init =
+            State.create >> freya
+
 #if Hopac
 
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
-                freya (State.create e)
-                |> Job.bind (fun (_, s) ->
-                       Job.awaitUnitTask (n.Invoke (s.Environment)))
-                |> Hopac.startAsTask :> Task))
+                Hopac.startAsTask (
+                    Job.bind (fun (_, s) ->
+                       Job.awaitUnitTask (n.Invoke (s.Environment))) (init e)) :> Task))
 
 #else
 
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
-                async.Bind (freya (State.create e), fun (_, s) ->
-                    Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
+                Async.StartAsTask (
+                    async.Bind (init e, fun (_, s) ->
+                        Async.AwaitTask (n.Invoke (s.Environment)))) :> Task))
 
 #endif
