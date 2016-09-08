@@ -49,15 +49,12 @@ module OwinAppFunc =
 #if Hopac
 
         OwinAppFunc (fun e ->
-            Async.StartAsTask (
-                Async.Ignore (
-                    Job.toAsync (freya (State.create e)))) :> Task)
+            Hopac.startAsTask (freya (State.create e)) :> Task)
 
 #else
 
         OwinAppFunc (fun e ->
-            Async.StartAsTask (
-                Async.Ignore (freya (State.create e))) :> Task)
+            Async.StartAsTask (freya (State.create e)) :> Task)
 
 #endif
 
@@ -80,8 +77,10 @@ module OwinMidFunc =
 
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
-                async.Bind (Job.toAsync (freya (State.create e)), fun (_, s) ->
-                    Async.AwaitTask (n.Invoke (s.Environment))) |> Async.StartAsTask :> Task))
+                freya (State.create e)
+                |> Job.bind (fun (_, s) ->
+                       Job.awaitUnitTask (n.Invoke (s.Environment)))
+                |> Hopac.startAsTask :> Task))
 
 #else
 
