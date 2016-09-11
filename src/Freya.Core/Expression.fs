@@ -1,15 +1,16 @@
 ﻿namespace Freya.Core
 
-(* Expression
+// Expression
 
-   A simple computation expression for working with Freya functions as an
-   alternative to the function/operator based syntax also available. A basic
-   builder is defined in and an instance of the builder. *)
+// A simple computation expression for working with Freya functions as an
+// alternative to the function/operator based syntax also available. A basic
+// builder is defined in and an instance of the builder.
 
-(* Types
+// Types
 
-   The basic builder type, implementing a subset of the memeber functions
-   possible with custom computation expressions. *)
+/// The FreyaBuilder type, implementing the basic underlying computation
+/// expression builder required to supply Freya with computation expression
+/// syntax for the core Freya<_> function type.
 
 type FreyaBuilder () =
 
@@ -23,7 +24,7 @@ type FreyaBuilder () =
         Freya.init (a)
 
     member __.ReturnFrom (m: Freya<'a>) : Freya<'a> =
-        Freya.initFrom (m)
+        Freya.identity (m)
 
     member __.Combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
         Freya.combine (m1, m2)
@@ -31,13 +32,17 @@ type FreyaBuilder () =
     member __.Zero () : Freya<unit> =
         Freya.zero ()
 
-(* Builder
+// Builder
 
-   The instance of the FreyaBuilder used to provide the freya computation
-   expression syntax. *)
+// The instance of the FreyaBuilder used to provide the freya computation
+// expression syntax.
 
 [<AutoOpen>]
 module Builder =
+
+    /// A computation expression for creating and working with Freya<_>
+    /// function types using the various Freya functions defined for working
+    /// with state, composition, etc.
 
     let freya =
         FreyaBuilder ()

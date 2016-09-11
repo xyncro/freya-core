@@ -1,16 +1,16 @@
 ﻿namespace Freya.Core
 
-(* Configuration
+// Configuration
 
-   A simple basic computation expression builder specialized for minimal
-   development and a simplistic approach to maintaining a threaded instance of
-   some configuration state. This simple builder type is used as the basis for
-   the various custom expressions used in Routers, Machines, etc. *)
+// A simple basic computation expression builder specialized for minimal
+// development and a simplistic approach to maintaining a threaded instance of
+// some configuration state. This simple builder type is used as the basis for
+// the various custom expressions used in Routers, Machines, etc.
 
-(* Types
+// Types
 
-   The basic ConfigurationBuilder type and the operations type specifiying the
-   init and bind functions which must be supplied to implement the builder. *)
+// The basic ConfigurationBuilder type and the operations type specifiying the
+// init and bind functions which must be supplied to implement the builder.
 
 type ConfigurationBuilder<'c> (operations: ConfigurationBuilderOperations<'c>) =
 
@@ -33,13 +33,17 @@ type ConfigurationBuilder<'c> (operations: ConfigurationBuilderOperations<'c>) =
     { Init: unit -> 'c
       Bind: ('c * (unit -> 'c)) -> 'c }
 
-(* Operations
+// Operations
 
-   Custom operations with syntax, currently providing a method for nesting
-   expressions, giving modularity through the use of the "including" syntax
-   available in all derived computation expressions. *)
+// Custom operations with syntax, currently providing a method for nesting
+// expressions, giving modularity through the use of the "including" syntax
+// available in all derived computation expressions.
 
 type ConfigurationBuilder<'c> with
+
+    /// Include another computation expression of the same type within this
+    /// computation expression, combing the two expressions (using Bind on the
+    /// unit return value).
 
     [<CustomOperation ("including", MaintainsVariableSpaceUsingBind = true)>]
     member x.Including (m, configuration) = 

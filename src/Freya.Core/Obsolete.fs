@@ -3,22 +3,22 @@
 open System
 open Aether
 
-(* Obsolete
+// Obsolete
 
-   Backwards compatibility shims to make the 2.x-> 3.x transition
-   less painful, providing functionally equivalent options where possible.
+// Backwards compatibility shims to make the 2.x-> 3.x transition
+// less painful, providing functionally equivalent options where possible.
 
-   To be removed for 4.x releases. *)
+// To be removed for 4.x releases.
 
 [<AutoOpen>]
 module Obsolete =
 
-    (* Freya *)
+    // Freya
 
     [<RequireQualifiedAccess>]
     module Freya =
 
-        (* Pipeline *)
+        // Pipeline
 
         [<Obsolete ("Use Pipeline.next instead.")>]
         let next =
@@ -32,7 +32,7 @@ module Obsolete =
         let inline pipe p1 p2 =
             Pipeline.compose p1 p2
 
-        (* Unqualified State *)
+        // Unqualified State
 
         [<Obsolete ("Use Freya.Optic.get id_ instead.")>]
         let getState : Freya<State> =
@@ -46,7 +46,7 @@ module Obsolete =
         let mapState : (State -> State) -> Freya<unit> =
             Freya.Optic.map id_
 
-        (* Unqualified Lens *)
+        // Unqualified Lens
 
         [<Obsolete ("Use Freya.Optic.get instead.")>]
         let inline getLens l =
@@ -72,7 +72,7 @@ module Obsolete =
         let inline mapLensPartial l f =
             Freya.Optic.map l f
 
-        (* Qualified Lens *)
+        // Qualified Lens
 
         [<RequireQualifiedAccess>]
         [<Obsolete ("Use Freya.Optic module functions instead.")>]
@@ -101,6 +101,8 @@ module Obsolete =
             [<Obsolete ("Use Freya.Optic.map instead.")>]
             let inline mapPartial l f =
                 Freya.Optic.map l f
+
+        // Qualified State
 
         [<RequireQualifiedAccess>]
         [<Obsolete ("Use Freya.Optic module functions instead.")>]

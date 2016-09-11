@@ -11,10 +11,10 @@ open Hopac
 
 #endif
 
-(* Prelude
+//
 
-   Helper functions to make running tests against the Freya function simpler,
-   including a standard known state. *)
+// Helper functions to make running tests against the Freya function simpler,
+// including a standard known state.
 
 let private environment () =
     let e = Dictionary<string, obj> () :> IDictionary<string, obj>
@@ -41,10 +41,10 @@ let private run f =
 
 #endif
 
-(* Common
+// Common
 
-   Tests of the common functions applying to the Freya function, and
-   underlying the computation expression builder. *)
+// Tests of the common functions applying to the Freya function, and
+// underlying the computation expression builder.
 
 [<Fact>]
 let ``Freya.init and Freya.apply behave correctly`` () =
@@ -53,10 +53,10 @@ let ``Freya.init and Freya.apply behave correctly`` () =
 
     fst (run (Freya.apply (m, f))) =! 42
 
-(* Optic
+// Optic
 
-   Tests of the various Optic functions which work on the Freya function,
-   enabling optic based operations on the underlying state. *)
+// Tests of the various Optic functions which work on the Freya function,
+// enabling optic based operations on the underlying state.
 
 let private key_ =
     State.value_ "key"

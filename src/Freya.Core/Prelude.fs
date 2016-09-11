@@ -3,24 +3,30 @@
 open System.Collections.Generic
 open Aether
 
-(* Prelude
+// Prelude
 
-   Generically useful functions and types for working with Freya relevant data
-   structures and approaches, particularly around the prevalent use of optics
-   throughout the Freya codebase. *)
+/// Generically useful functions and types for working with Freya relevant data
+/// structures and approaches, particularly around the prevalent use of optics
+/// throughout the Freya codebase.
 
 [<AutoOpen>]
 module Common =
 
-    (* Comparison/Equality
+    // Comparison/Equality
 
-       Functions for simplifying the customization of comparison and equality on
-       types where this is required. *)
+    // Functions for simplifying the customization of comparison and equality
+    // on types where this is required.
+
+    /// A general comparison function to simplify implementing comparable
+    /// interfaces.
 
     let compareOn f x (y: obj) =
         match y with
         | :? 'a as y -> compare (f x) (f y)
         | _ -> invalidArg "y" "Cannot compare values of different types."
+
+    /// A general equality function to simplify implementing equatable
+    /// interfaces.
 
     let equalsOn f x (y: obj) =
         match y with
@@ -30,24 +36,32 @@ module Common =
     let hashOn f x =
         hash (f x)
 
-    (* Glue
+    // Glue
 
-       Commonly used glue functions for shortening code. *)
+    // Commonly used glue functions for shortening code.
+
+    /// Simple functional flip, reversing the argument order of a function
+    /// taking two arguments.
 
     let flip f a b =
         f b a
 
+    /// Simple tuple, creating a new tuple given two arguments.
+
     let tuple a b =
         a, b
 
-(* Dictionary
+// Dictionary
 
-   Extensions and functions for working with generic dictionaries,
-   significantly through optics (providing a degenerate but useful lens which
-   mutates state). *)
+/// Extensions and functions for working with generic dictionaries,
+/// significantly through optics (providing a degenerate but useful lens which
+/// mutates state).
 
 [<RequireQualifiedAccess>]
 module Dict =
+
+    /// A prism to a possible value within a dictionary given a key which may
+    /// be present within the dictionary.
 
     let key_<'k,'v when 'v: null> k : Prism<IDictionary<'k,'v>,'v> =
         (fun d ->
@@ -59,6 +73,14 @@ module Dict =
             | true -> d.[k] <- v; d
             | _ -> d)
 
+    /// A lens to a possible value option within a dictionary given a key which
+    /// may be present within a dictionary.
+
+    /// When working with this lens as an optic, the Some and None cases of
+    /// optic carry semantic meaning, where Some indicates that the value is or
+    /// should be present within the dictionary, and None indicates that the
+    /// value is not, or should not be present within the dictionary.
+
     let value_<'k,'v when 'v: null> k : Lens<IDictionary<'k,'v>,'v option> =
         (fun d ->
             match d.TryGetValue k with
@@ -69,11 +91,11 @@ module Dict =
             | Some v -> d.[k] <- v; d
             | _ -> d)
 
-(* Option
+// Option
 
-   Extensions and functions for working with Option types, significantly
-   through optics, providing functions for mapping existing optics to the value
-   where possible. *)
+/// Extensions and functions for working with Option types, significantly
+/// through optics, providing functions for mapping existing optics to the value
+/// where possible.
 
 [<RequireQualifiedAccess>]
 module Option =
@@ -87,20 +109,20 @@ module Option =
     let mapLens (l: Lens<'a,'b>) : Prism<'a option,'b> =
         Option.map (fst l), snd l >> Option.map
 
-(* Constants
+// Constants
 
-   Literal constants for the values of keys within the OWIN environment,
-   provided here as being generically useful to any code needing to work
-   within the OWIN environment dictionary. *)
+/// Literal constants for the values of keys within the OWIN environment,
+/// provided here as being generically useful to any code needing to work
+/// within the OWIN environment dictionary.
 
 [<RequireQualifiedAccess>]
 module Constants =
 
-    (* OWIN 1.1.0
+    // OWIN 1.1.0
 
-       Taken from [https://github.com/owin/owin/blob/master/spec/owin-1.1.0.md] *)
+    // Taken from [https://github.com/owin/owin/blob/master/spec/owin-1.1.0.md]
 
-    (* 3.2.1 Request Data *)
+    // 3.2.1 Request Data
 
     [<CompiledName ("RequestScheme")>]
     let [<Literal>] RequestScheme = "owin.RequestScheme"
@@ -132,7 +154,7 @@ module Constants =
     [<CompiledName ("RequestUser")>]
     let [<Literal>] RequestUser = "owin.RequestUser"
 
-    (* 3.2.2 Response Data *)
+    // 3.2.2 Response Data
 
     [<CompiledName ("ResponseStatusCode")>]
     let [<Literal>] ResponseStatusCode = "owin.ResponseStatusCode"
@@ -149,7 +171,7 @@ module Constants =
     [<CompiledName ("ResponseBody")>]
     let [<Literal>] ResponseBody = "owin.ResponseBody"
 
-    (* 3.2.3 Other Data *)
+    // 3.2.3 Other Data
 
     [<CompiledName ("CallCancelled")>]
     let [<Literal>] CallCancelled = "owin.CallCancelled"
@@ -157,7 +179,7 @@ module Constants =
     [<CompiledName ("OwinVersion")>]
     let [<Literal>] OwinVersion = "owin.Version"
 
-    (* http://owin.org/spec/CommonKeys.html *)
+    // http://owin.org/spec/CommonKeys.html
 
     [<RequireQualifiedAccess>]
     [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -196,14 +218,15 @@ module Constants =
         [<CompiledName ("ServerName")>]
         let [<Literal>] ServerName = "server.Name"
 
-    (* SendFile Extensions
-       See [http://owin.org/extensions/owin-SendFile-Extension-v0.3.0.htm] *)
+    // SendFile Extensions
+
+    // See [http://owin.org/extensions/owin-SendFile-Extension-v0.3.0.htm]
 
     [<RequireQualifiedAccess>]
     [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module SendFiles =
 
-        (* 3.1. Startup *)
+        // 3.1. Startup
 
         [<CompiledName ("Version")>]
         let [<Literal>] Version = "sendfile.Version"
@@ -214,29 +237,30 @@ module Constants =
         [<CompiledName ("Concurrency")>]
         let [<Literal>] Concurrency = "sendfile.Concurrency"
 
-        (* 3.2. Per Request *)
+        // 3.2. Per Request
 
         [<CompiledName ("SendAsync")>]
         let [<Literal>] SendAsync = "sendfile.SendAsync"
 
-    (* Opaque Stream Extensions
-       See [http://owin.org/extensions/owin-OpaqueStream-Extension-v0.3.0.htm] *)
+    // Opaque Stream Extensions
+
+    // See [http://owin.org/extensions/owin-OpaqueStream-Extension-v0.3.0.htm]
 
     [<RequireQualifiedAccess>]
     [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module Opaque =
 
-        (* 3.1. Startup *)
+        // 3.1. Startup
 
         [<CompiledName ("Version")>]
         let [<Literal>] Version = "opaque.Version"
 
-        (* 3.2. Per Request *)
+        // 3.2. Per Request
 
         [<CompiledName ("Upgrade")>]
         let [<Literal>] Upgrade = "opaque.Upgrade"
 
-        (* 5. Consumption *)
+        // 5. Consumption
 
         [<CompiledName ("Stream")>]
         let [<Literal>] Stream = "opaque.Stream"
@@ -244,29 +268,30 @@ module Constants =
         [<CompiledName ("CallCancelled")>]
         let [<Literal>] CallCancelled = "opaque.CallCancelled"
 
-    (* Web Socket Extensions
-       See [http://owin.org/extensions/owin-WebSocket-Extension-v0.4.0.htm] *)
+    // Web Socket Extensions
+
+    // See [http://owin.org/extensions/owin-WebSocket-Extension-v0.4.0.htm]
 
     [<RequireQualifiedAccess>]
     [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
     module WebSocket =
 
-        (* 3.1. Startup *)
+        // 3.1. Startup
 
         [<CompiledName ("Version")>]
         let [<Literal>] Version = "websocket.Version"
 
-        (* 3.2. Per Request *)
+        // 3.2. Per Request
 
         [<CompiledName ("Accept")>]
         let [<Literal>] Accept = "websocket.Accept"
 
-        (* 4. Accept *)
+        // 4. Accept
 
         [<CompiledName ("SubProtocol")>]
         let [<Literal>] SubProtocol = "websocket.SubProtocol"
 
-        (* 5. Consumption *)
+        // 5. Consumption
 
         [<CompiledName ("SendAsync")>]
         let [<Literal>] SendAsync = "websocket.SendAsync"

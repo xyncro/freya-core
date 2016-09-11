@@ -6,15 +6,18 @@ open Hopac
 
 #endif
 
-(* Inference *)
+// Inference
 
 [<AutoOpen>]
 module Inference =
 
+    /// Functions for inferring Freya types from suitable types which possess
+    /// appropriate type signatures.
+
     [<RequireQualifiedAccess>]
     module Freya =
 
-        (* Inference *)
+        // Inference
 
         [<RequireQualifiedAccess>]
         module Inference =
@@ -44,6 +47,10 @@ module Inference =
 
             let inline infer (x: 'a) =
                 defaults (x, Defaults)
+
+        /// A function to return a Freya function given an instance of a type
+        /// which has a suitable static Freya method. An existing Freya
+        /// function will be returned as-is.
 
         let inline infer x =
             Inference.infer x
