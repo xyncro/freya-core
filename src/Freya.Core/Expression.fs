@@ -14,23 +14,23 @@
 
 type FreyaBuilder () =
 
-    member __.Bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
-        Freya.bind (m, f)
+    member __.Bind (aF: Freya<'a>, a2bF: 'a -> Freya<'b>) : Freya<'b> =
+        aF |> Freya.bind a2bF
 
-    member __.Delay (f: unit -> Freya<'a>) : Freya<'a> =
-        Freya.delay (f)
+    member __.Delay (u2aF: unit -> Freya<'a>) : Freya<'a> =
+        Freya.delay u2aF
 
     member __.Return (a: 'a) : Freya<'a> =
-        Freya.init (a)
+        Freya.init a
 
-    member __.ReturnFrom (m: Freya<'a>) : Freya<'a> =
-        Freya.identity (m)
+    member __.ReturnFrom (aF: Freya<'a>) : Freya<'a> =
+        aF
 
-    member __.Combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
-        Freya.combine (m1, m2)
+    member __.Combine (xF: Freya<_>, aF: Freya<'a>) : Freya<'a> =
+        xF |> Freya.combine aF
 
     member __.Zero () : Freya<unit> =
-        Freya.zero ()
+        Freya.empty
 
 // Builder
 

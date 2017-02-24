@@ -3,7 +3,7 @@
 open System
 open System.Threading.Tasks
 
-#if Hopac
+#if HOPAC
 
 open Hopac
 open Hopac.Extensions
@@ -29,7 +29,7 @@ type OwinEnvironment =
 
 /// An alias for the basic OwinAppFunc type of a Func<OwinEnvironment,Task>.
 
-type OwinAppFunc = 
+type OwinAppFunc =
     Func<OwinEnvironment, Task>
 
 /// An alias for the basic OwinMidFunc type of a Func<OwinAppFunc,OwinAppFunc>,
@@ -59,16 +59,11 @@ module OwinAppFunc =
         let init =
             State.create >> freya
 
-#if Hopac
-
         OwinAppFunc (fun e ->
+#if HOPAC
             Hopac.startAsTask (init e) :> Task)
-
 #else
-
-        OwinAppFunc (fun e ->
             Async.StartAsTask (init e) :> Task)
-
 #endif
 
 // OwinMidFunc
@@ -92,20 +87,14 @@ module OwinMidFunc =
         let init =
             State.create >> freya
 
-#if Hopac
-
         OwinMidFunc (fun n ->
             OwinAppFunc (fun e ->
+#if HOPAC
                 Hopac.startAsTask (
-                    Job.bind (fun (_, s) ->
-                       Job.awaitUnitTask (n.Invoke (s.Environment))) (init e)) :> Task))
-
+                    init e |> Job.bind (fun (FreyaResult.State s) ->
+                       s.Environment |> Job.liftUnitTask (fun e -> n.Invoke e))) :> Task))
 #else
-
-        OwinMidFunc (fun n ->
-            OwinAppFunc (fun e ->
                 Async.StartAsTask (
                     async.Bind (init e, fun (_, s) ->
                         Async.AwaitTask (n.Invoke (s.Environment)))) :> Task))
-
 #endif

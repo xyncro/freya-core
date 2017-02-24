@@ -1,11 +1,5 @@
 ﻿namespace Freya.Core
 
-#if Hopac
-
-open Hopac
-
-#endif
-
 // Inference
 
 [<AutoOpen>]
@@ -25,22 +19,19 @@ module Inference =
             type Defaults =
                 | Defaults
 
-                static member Freya (x: Freya<_>) =
-                    x
+                static member inline Freya (xF: Freya<_>) =
+                    xF
 
-#if Hopac
-
-                static member inline Freya (_: unit) =
-                    fun s ->
-                        Job.result ((), s)
-
-#else
-
-                static member inline Freya (_: unit) =
-                    fun s ->
-                        async.Return ((), s)
-
+#if HOPAC
+                static member inline Freya (xJ: Hopac.Job<_>) =
+                    Freya.fromJob xJ
 #endif
+
+                static member inline Freya (xA: Async<_>) =
+                    Freya.fromAsync xA
+
+                static member inline Freya (_: unit) =
+                    Freya.empty
 
             let inline defaults (a: ^a, _: ^b) =
                     ((^a or ^b) : (static member Freya: ^a -> Freya<_>) a)

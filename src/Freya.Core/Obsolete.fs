@@ -17,6 +17,7 @@ module Obsolete =
 
     [<RequireQualifiedAccess>]
     module Freya =
+        open Freya.Core.Optics
 
         // Pipeline
 

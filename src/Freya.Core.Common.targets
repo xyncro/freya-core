@@ -1,0 +1,36 @@
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
+    <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="..\nuget.props" />
+
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Prelude.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Core.fsi" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Core.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Optics.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Pipeline.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Configuration.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Inference.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Expression.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Integration.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Operators.fs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Obsolete.fs" />
+    <EmbeddedResource Include="**\*.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
+    <PackageReference Include="FSharp.Core" Version="4.*" />
+    <PackageReference Include="Aether" Version="8.1.3-alpha-*" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsHopac)' == 'true'">
+    <PackageReference Include="Hopac" Version="0.3.24-alpha-*" />
+    <PackageReference Include="System.ValueTuple" Version="4.*" />
+  </ItemGroup>
+</Project>

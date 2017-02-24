@@ -31,6 +31,23 @@ type Pipeline =
 [<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module Pipeline =
 
+    // Functions
+
+    // Simple shorthand convenience instances of a Pipeline returning Next
+    // and a Pipeline returning halt. Additionally a composition function which
+    // will infer any two values which support Pipeline static inference is
+    // defined.
+
+    /// An instance of a Pipeline which will always return Next.
+
+    let next : Pipeline =
+        Freya.init Next
+
+    /// An instance of a Pipleine which will always return Halt.
+
+    let halt : Pipeline =
+        Freya.init Halt
+
     // Inference
 
     /// Inference for a Pipeline type, where a Pipeline is returned with no
@@ -51,7 +68,7 @@ module Pipeline =
                 Freya.init x
 
             static member Pipeline (x: Freya<_>) : Pipeline =
-                Freya.map2 ((fun _ x -> x), x, Freya.init Next)
+                Freya.map2 (fun _ x -> x) x next
 
         let inline defaults (a: ^a, _: ^b) =
                 ((^a or ^b) : (static member Pipeline: ^a -> Pipeline) a)
@@ -67,23 +84,6 @@ module Pipeline =
     let inline infer x =
         Inference.infer x
 
-    // Functions
-
-    // Simple shorthand convenience instances of a Pipeline returning Next
-    // and a Pipeline returning halt. Additionally a composition function which
-    // will infer any two values which support Pipeline static inference is
-    // defined.
-
-    /// An instance of a Pipeline which will always return Next.
-
-    let next : Pipeline =
-        Freya.init Next
-
-    /// An instance of a Pipleine which will always return Halt.
-
-    let halt : Pipeline =
-        Freya.init Halt
-
     /// A function to compose two functions which may be - or may be inferred
     /// to be (see Pipeline.infer) - Pipeline functions, given the composition
     /// approach of executing functions sequentially until one returns Halt.
@@ -95,5 +95,6 @@ module Pipeline =
     /// will be returned.
 
     let inline compose p1 p2 : Pipeline =
-        Freya.bind (infer p1, (function | Next -> infer p2
-                                        | _ -> halt))
+        infer p1
+        |> Freya.bind (function | Next -> infer p2
+                                | _ -> halt)

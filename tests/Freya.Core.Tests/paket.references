@@ -1,8 +1,0 @@
-﻿group Common
-
-  Aether
-
-group Test
-
-  Unquote
-  xunit
