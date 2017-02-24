@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard1.6</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
+    <DefineConstants Condition="'$(UseStructResult)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
     <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
   </PropertyGroup>
 
