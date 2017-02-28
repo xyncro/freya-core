@@ -19,6 +19,6 @@ type CoreConfig() =
         base.Add(MemoryDiagnoser.Default)
         base.Add(BaselineValidator.FailOnError)
         base.Add(JitOptimizationsValidator.FailOnError)
-        base.KeepBenchmarkFiles <- true
+//        base.KeepBenchmarkFiles <- true
 
 let thisAssembly = typeof<Dummy>.GetTypeInfo().Assembly
