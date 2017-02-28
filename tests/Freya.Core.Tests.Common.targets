@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
     <ServerGarbageCollection Condition="'$(IsHopac)' == 'true'">true</ServerGarbageCollection>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
