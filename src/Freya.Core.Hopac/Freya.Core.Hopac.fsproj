@@ -1,6 +1,5 @@
 <Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
   <PropertyGroup>
-    <UseStructResult>true</UseStructResult>
     <IsHopac>true</IsHopac>
   </PropertyGroup>
   <Import Project="..\Freya.Core.Common.targets" />
