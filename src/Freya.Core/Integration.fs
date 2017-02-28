@@ -95,6 +95,6 @@ module OwinMidFunc =
                        s.Environment |> Job.liftUnitTask (fun e -> n.Invoke e))) :> Task))
 #else
                 Async.StartAsTask (
-                    async.Bind (init e, fun (_, s) ->
+                    async.Bind (init e, fun (FreyaResult.State s) ->
                         Async.AwaitTask (n.Invoke (s.Environment)))) :> Task))
 #endif

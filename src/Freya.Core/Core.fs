@@ -220,8 +220,8 @@ module Freya =
                 bF s1 |> Job.map (fun (FreyaResult (b, s2)) ->
                     FreyaResult.create (a2b2c a b) s2))
 #else
-            async.Bind (aF s, fun (a, s1) ->
-                async.Bind (bF s1, fun (b, s2) ->
+            async.Bind (aF s, fun (FreyaResult (a, s1)) ->
+                async.Bind (bF s1, fun (FreyaResult (b, s2)) ->
                     async.Return (FreyaResult.create (a2b2c a b) s2)))
 #endif
 
@@ -234,9 +234,9 @@ module Freya =
                     cF s2 |> Job.map (fun (FreyaResult (c, s3)) ->
                         FreyaResult.create (a2b2c2d a b c) s3)))
 #else
-            async.Bind (aF s, fun (a, s1) ->
-                async.Bind (bF s1, fun (b, s2) ->
-                    async.Bind (cF s2, fun (c, s3) ->
+            async.Bind (aF s, fun (FreyaResult (a, s1)) ->
+                async.Bind (bF s1, fun (FreyaResult (b, s2)) ->
+                    async.Bind (cF s2, fun (FreyaResult (c, s3)) ->
                         async.Return (FreyaResult.create (a2b2c2d a b c) s3))))
 #endif
 
@@ -384,6 +384,6 @@ module Freya =
                 aF s |> Job.map (fun (FreyaResult (memo, s)) ->
                     (FreyaResult.create memo (Aether.Optic.set memo_ (Some memo) s)))
 #else
-                async.Bind (aF s, fun (memo, s) ->
+                async.Bind (aF s, fun (FreyaResult (memo, s)) ->
                     async.Return (FreyaResult.create memo (Aether.Optic.set memo_ (Some memo) s)))
 #endif
