@@ -19,19 +19,16 @@ module Inference =
             type Defaults =
                 | Defaults
 
-                static member inline Freya (xF: Freya<_>) =
+                static member inline Freya (xF: Freya<'x>) =
                     xF
 
-#if HOPAC
-                static member inline Freya (xJ: Hopac.Job<_>) =
-                    Freya.fromJob xJ
-#endif
-
-                static member inline Freya (xA: Async<_>) =
-                    Freya.fromAsync xA
-
                 static member inline Freya (_: unit) =
-                    Freya.empty
+                    fun s ->
+#if HOPAC
+                        Hopac.Job.result ((), s)
+#else
+                        async.Return ((), s)
+#endif
 
             let inline defaults (a: ^a, _: ^b) =
                     ((^a or ^b) : (static member Freya: ^a -> Freya<_>) a)
