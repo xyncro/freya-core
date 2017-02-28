@@ -16,4 +16,4 @@ test: off
 
 artifacts:
   - path: '**\*.nupkg'
-  - path: '**\BenchmarkDotNet.Artifacts\'
+  - path: '**\BenchmarkDotNet.Artifacts\**\*.*'

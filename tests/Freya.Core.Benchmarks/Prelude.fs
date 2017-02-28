@@ -14,7 +14,7 @@ type Dummy = Dummy
 type CoreConfig() =
     inherit ManualConfig()
     do
-        base.Add(Job.LongRun.WithGcServer(true).WithGcConcurrent(true).WithUnrollFactor(256))
+        base.Add(Job.MediumRun.WithGcServer(true).WithUnrollFactor(256))
         base.Add(EnvironmentAnalyser.Default)
         base.Add(MemoryDiagnoser.Default)
         base.Add(BaselineValidator.FailOnError)

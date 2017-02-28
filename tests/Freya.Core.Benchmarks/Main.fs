@@ -11,5 +11,6 @@ open BenchmarkDotNet.Running
 let main argv =
     // let switcher = BenchmarkSwitcher thisAssembly
     // let _ = switcher.Run argv
+    let _ = BenchmarkRunner.Run<Freya.Core.Benchmarks.RunFreya>()
     let _ = BenchmarkRunner.Run<Freya.Core.Benchmarks.HandleOwinMidFunc>()
     0
