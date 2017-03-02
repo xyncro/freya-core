@@ -3,13 +3,13 @@
     <VersionPrefix>4.0.0</VersionPrefix>
     <Authors>Andrew Cherry, Ryan Riley, Marcus Griep</Authors>
     <Description>The core building blocks of the Freya web stack</Description>
-    <Description Condition="'$(IsHopac)' == 'true'">$(Description) powered by the Hopac concurrency library</Description>
+    <Description Condition="'$(Hopac)' == 'true'">$(Description) powered by the Hopac concurrency library</Description>
     <Copyright>Copyright © Xyncro Ltd</Copyright>
     <PackageLicenseUrl>https://github.com/xyncro/freya-core/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://freya.io/</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/xyncro/freya-core</RepositoryUrl>
-    <Tags>functional;web;freya;f#;fsharp</Tags>
-    <Tags Condition="'$(IsHopac)' == 'true'">$(Description);hopac</Tags>
+    <PackageTags>functional;web;freya;f#;fsharp</PackageTags>
+    <PackageTags Condition="'$(Hopac)' == 'true'">$(PackageTags);hopac</PackageTags>
   </PropertyGroup>
 </Project>

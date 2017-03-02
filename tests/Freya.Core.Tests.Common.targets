@@ -2,8 +2,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <DefineConstants Condition="'$(IsHopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
-    <ServerGarbageCollection Condition="'$(IsHopac)' == 'true'">true</ServerGarbageCollection>
+    <DefineConstants Condition="'$(Hopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
+    <ServerGarbageCollection Condition="'$(Hopac)' == 'true'">true</ServerGarbageCollection>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
