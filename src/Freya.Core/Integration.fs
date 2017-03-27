@@ -91,10 +91,18 @@ module OwinMidFunc =
             OwinAppFunc (fun e ->
 #if HOPAC
                 Hopac.startAsTask (
-                    init e |> Job.bind (fun (FreyaResult.State s) ->
-                       s.Environment |> Job.liftUnitTask (fun e -> n.Invoke e))) :> Task))
+                    init e |> Job.bind (fun (FreyaResult (p,s)) ->
+                        match p with
+                        | Halt ->
+                            Job.unit ()
+                        | Next ->
+                            s.Environment |> Job.liftUnitTask (fun e -> n.Invoke e))) :> Task))
 #else
                 Async.StartAsTask (
-                    async.Bind (init e, fun (FreyaResult.State s) ->
-                        Async.AwaitTask (n.Invoke (s.Environment)))) :> Task))
+                    async.Bind (init e, fun (FreyaResult (p,s)) ->
+                        match p with
+                        | Halt ->
+                            async.Zero ()
+                        | Next ->
+                            Async.AwaitTask (n.Invoke (s.Environment)))) :> Task))
 #endif
