@@ -89,9 +89,7 @@ let ``Freya.Optic.get|set|map behave correctly`` () =
 
 [<Fact>]
 let ``OwinMidFunc.ofFreya creates a well-behaved middleware that doesn't continue pipeline on Halt`` () =
-    let m = freya {
-        return Halt
-    }
+    let m = freya { return Halt }
 
     let f : OwinMidFunc = OwinMidFunc.ofFreya m
     let inner : OwinAppFunc = OwinAppFunc (fun env -> failwithf "Should not run"; System.Threading.Tasks.Task.CompletedTask)
@@ -99,9 +97,7 @@ let ``OwinMidFunc.ofFreya creates a well-behaved middleware that doesn't continu
 
 [<Fact>]
 let ``OwinMidFunc.ofFreya creates a well-behaved middleware that continues the pipeline on Next`` () =
-    let m = freya {
-        return Next
-    }
+    let m = freya { return Next }
 
     let f : OwinMidFunc = OwinMidFunc.ofFreya m
     let mutable hit = false
