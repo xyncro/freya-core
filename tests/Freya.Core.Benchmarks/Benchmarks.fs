@@ -34,7 +34,8 @@ type HandleOwinMidFunc () =
     let myFreya = freya {
         let! r = Freya.Optic.get key_
         do! Freya.Optic.set key_ (Some 42UL)
-        return! Freya.Optic.get key_
+        let! _ = Freya.Optic.get key_
+        return Halt
     }
 
     let next : OwinAppFunc = OwinAppFunc (fun e -> System.Threading.Tasks.Task.CompletedTask)
