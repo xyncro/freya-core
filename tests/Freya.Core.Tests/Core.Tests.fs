@@ -86,3 +86,25 @@ let ``Freya.Optic.get|set|map behave correctly`` () =
             return v1, v2 }
 
     Aether.Optic.get FreyaResult.value_ (run m) =! (Some 42, Some 84)
+
+[<Fact>]
+let ``OwinMidFunc.ofFreya creates a well-behaved middleware that doesn't continue pipeline on Halt`` () =
+    let m = freya {
+        return Halt
+    }
+
+    let f : OwinMidFunc = OwinMidFunc.ofFreya m
+    let inner : OwinAppFunc = OwinAppFunc (fun env -> failwithf "Should not run"; System.Threading.Tasks.Task.CompletedTask)
+    f.Invoke(inner).Invoke(dict []).Wait()
+
+[<Fact>]
+let ``OwinMidFunc.ofFreya creates a well-behaved middleware that continues the pipeline on Next`` () =
+    let m = freya {
+        return Next
+    }
+
+    let f : OwinMidFunc = OwinMidFunc.ofFreya m
+    let mutable hit = false
+    let inner : OwinAppFunc = OwinAppFunc (fun env -> hit <- true; System.Threading.Tasks.Task.CompletedTask)
+    f.Invoke(inner).Invoke(dict []).Wait()
+    hit =! true
