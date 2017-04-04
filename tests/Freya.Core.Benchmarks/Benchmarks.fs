@@ -4,7 +4,6 @@ open BenchmarkDotNet.Attributes
 open Hopac
 open Freya.Core
 open Freya.Core.Operators
-open Freya.Core.Optics
 
 [<Config(typeof<CoreConfig>)>]
 type RunFreya () =

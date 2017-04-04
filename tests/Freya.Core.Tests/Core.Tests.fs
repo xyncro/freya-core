@@ -63,8 +63,6 @@ let ``Freya.combine behaves correctly`` () =
     unbox s.Environment.["o2"] =! false
     unbox s.Environment.["o3"] =! true
 
-open Freya.Core.Optics
-
 // Optic
 
 // Tests of the various Optic functions which work on the Freya function,

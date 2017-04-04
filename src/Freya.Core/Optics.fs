@@ -48,3 +48,6 @@ module Freya =
             fun (s: State) ->
                 async.Return (FreyaResult.create () (Aether.Optic.map o f s))
 #endif
+
+[<assembly:AutoOpen("Freya.Core.Optics")>]
+do ()
