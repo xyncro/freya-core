@@ -5,6 +5,7 @@
     <StructFreya>false</StructFreya>
     <DefineConstants Condition="'$(StructFreya)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
     <DefineConstants Condition="'$(Hopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <Import Project="..\nuget.props" />
@@ -21,17 +22,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Integration.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Operators.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Obsolete.fs" />
-    <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
     <PackageReference Include="FSharp.Core" Version="4.1.0" />
-    <PackageReference Include="Aether" Version="8.2.0-alpha-*" />
+    <PackageReference Include="Aether" Version="[8.2.0,9)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Hopac)' == 'true'">
-    <PackageReference Include="Hopac" Version="0.3.24-alpha-*" />
+    <PackageReference Include="Hopac" Version="0.3.23" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(StructFreya)' == 'true'">

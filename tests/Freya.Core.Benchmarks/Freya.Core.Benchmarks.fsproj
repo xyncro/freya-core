@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
     <DebugType>none</DebugType>
     <ServerGarbageCollection>true</ServerGarbageCollection>
+    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
   <ItemGroup>
     <PackageReference Include="FSharp.NET.Sdk" Version="1.*" PrivateAssets="All" />
     <PackageReference Include="FSharp.Core" Version="4.*" />
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.2.*" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.*" />
     <!--PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.10.2" /-->
   </ItemGroup>
 
