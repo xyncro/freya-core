@@ -5,7 +5,6 @@
     <StructFreya>false</StructFreya>
     <DefineConstants Condition="'$(StructFreya)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
     <DefineConstants Condition="'$(Hopac)' == 'true'">$(DefineConstants);HOPAC</DefineConstants>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <Import Project="..\nuget.props" />
