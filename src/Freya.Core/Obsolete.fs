@@ -17,7 +17,6 @@ module Obsolete =
 
     [<RequireQualifiedAccess>]
     module Freya =
-
         // Pipeline
 
         [<Obsolete ("Use Pipeline.next instead.")>]

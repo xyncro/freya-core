@@ -183,3 +183,7 @@ FakesAssemblies/
 
 # FSharp Lint
 *.FSharpLint
+
+#BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+binaries/

@@ -1,0 +1,16 @@
+version: 4.0.0-aci-{build}
+
+build_script:
+  - ps: dotnet --info
+  - ps: dotnet restore
+  - ps: dotnet build -c Release --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet test -c Release tests\Freya.Core.Tests\Freya.Core.Tests.fsproj
+  - ps: dotnet test -c Release tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj
+  - ps: dotnet pack -c Release --include-symbols --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
+  - ps: dotnet .\tests\Freya.Core.Benchmarks\bin\Release\netcoreapp1.1\Freya.Core.Benchmarks.dll
+
+test: off
+
+artifacts:
+  - path: '**\*.nupkg'
+  - path: '**\BenchmarkDotNet.Artifacts\**\*.*'

@@ -5,10 +5,8 @@ open Freya.Core
 open Swensen.Unquote
 open Xunit
 
-#if Hopac
-
+#if HOPAC
 open Hopac
-
 #endif
 
 //
@@ -25,20 +23,15 @@ let private environment () =
 let private meta () =
     { Memos = Map.empty }
 
-let private state () =
+let private state initial =
     { Environment = environment ()
       Meta = meta () }
 
-#if Hopac
-
 let private run f =
+#if HOPAC
     Hopac.run (f (state ()))
-
 #else
-
-let private run f =
     Async.RunSynchronously (f (state ()))
-
 #endif
 
 // Common
@@ -48,10 +41,27 @@ let private run f =
 
 [<Fact>]
 let ``Freya.init and Freya.apply behave correctly`` () =
-    let m = Freya.init 2
-    let f = Freya.init ((+) 40)
+    let aF = Freya.init 2
+    let a2Fb = Freya.init ((+) 40)
 
-    fst (run (Freya.apply (m, f))) =! 42
+    Aether.Optic.get FreyaResult.value_ (run (a2Fb |> Freya.apply aF)) =! 42
+
+[<Fact>]
+let ``Freya.combine behaves correctly`` () =
+    let ret =
+#if HOPAC
+        Job.result
+#else
+        async.Return
+#endif
+    let aF = fun s -> s.Environment.["o1"] <- true; ret <| FreyaResult.create 4 s
+    let bF = fun s -> s.Environment.["o3"] <- true; ret <| FreyaResult.create 2 s
+
+    let ((FreyaResult.State s) as fr) = run (aF |> Freya.combine bF)
+    Aether.Optic.get FreyaResult.value_ fr =! 2
+    unbox s.Environment.["o1"] =! true
+    unbox s.Environment.["o2"] =! false
+    unbox s.Environment.["o3"] =! true
 
 // Optic
 
@@ -73,4 +83,22 @@ let ``Freya.Optic.get|set|map behave correctly`` () =
 
             return v1, v2 }
 
-    fst (run m) =! (Some 42, Some 84)
+    Aether.Optic.get FreyaResult.value_ (run m) =! (Some 42, Some 84)
+
+[<Fact>]
+let ``OwinMidFunc.ofFreya creates a well-behaved middleware that doesn't continue pipeline on Halt`` () =
+    let m = freya { return Halt }
+
+    let f : OwinMidFunc = OwinMidFunc.ofFreya m
+    let inner : OwinAppFunc = OwinAppFunc (fun env -> failwithf "Should not run"; System.Threading.Tasks.Task.CompletedTask)
+    f.Invoke(inner).Invoke(dict []).Wait()
+
+[<Fact>]
+let ``OwinMidFunc.ofFreya creates a well-behaved middleware that continues the pipeline on Next`` () =
+    let m = freya { return Next }
+
+    let f : OwinMidFunc = OwinMidFunc.ofFreya m
+    let mutable hit = false
+    let inner : OwinAppFunc = OwinAppFunc (fun env -> hit <- true; System.Threading.Tasks.Task.CompletedTask)
+    f.Invoke(inner).Invoke(dict []).Wait()
+    hit =! true

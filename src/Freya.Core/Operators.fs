@@ -9,7 +9,6 @@ open System
 /// operations.
 
 module Operators =
-
     // Common
 
     // Symbolic operators for common monadic functions, using common operators
@@ -18,51 +17,51 @@ module Operators =
     /// The Apply (Freya.apply) function for Freya function types, taking a
     /// function Freya<'a -> 'b> and a Freya<'a> and returning a Freya<'b>.
 
-    let inline (<*>) f m =
-        Freya.apply (m, f)
+    let inline (<*>) a2Fb aF =
+        a2Fb |> Freya.apply aF
 
     /// The Bind (Freya.bind) function for Freya, taking a Freya<'a> and a
     /// function 'a -> Freya<'b> and returning a Freya<'b>.
 
-    let inline (>>=) m f =
-        Freya.bind (m, f)
+    let inline (>>=) aF a2bF =
+        aF |> Freya.bind a2bF
 
     /// The reversed Bind function for Freya.
 
-    let inline (=<<) f m =
-        Freya.bind (m, f)
+    let inline (=<<) a2bF aF =
+        aF |> Freya.bind a2bF
 
     /// The Kleisli composition function for Freya, taking a function
     /// 'a -> Freya<'b> and a function 'b -> Freya<'c> and returning a function
     /// 'a -> Freya<'c>.
 
-    let inline (>=>) m1 m2 =
-        fun x -> Freya.bind (m1 x, m2)
+    let inline (>=>) a2bF b2cF =
+        a2bF >> Freya.bind b2cF
 
     /// The reversed Kleisli composition function for Freya.
 
-    let inline (<=<) m1 m2 =
-        fun x -> Freya.bind (m2 x, m1)
+    let inline (<=<) b2cF a2bF =
+        a2bF >> Freya.bind b2cF
 
     /// The Left Combine (Freya.combine) function for Freya, taking two
     /// Freya<_> functions, composing their execution and returning the result
     /// of the first function.
 
-    let inline ( *>) m1 m2 =
-        Freya.combine (m1, m2)
+    let inline ( *>) xF aF =
+        xF |> Freya.combine aF
 
     /// The Right Combine (Freya.combine) function for Freya, taking two
     /// Freya<_> functions, composing their execution and returning the result
     /// of the second function.
 
-    let inline ( <*) m1 m2 =
-        Freya.combine (m2, m1)
+    let inline ( <*) aF xF =
+        xF |> Freya.combine aF
 
     /// The Map (Freya.map) function for Freya, taking a function 'a -> b' and
     /// a function Freya<'a> and returning a Freya<'b>.
 
-    let inline (<!>) f m =
-        Freya.map (m, f)
+    let inline (<!>) a2b aF =
+        aF |> Freya.map a2b
 
     // Optic
 

@@ -1,15 +1,9 @@
 ﻿namespace Freya.Core
 
-open System
-open System.Collections.Generic
 open Aether
-open Aether.Operators
 
-#if Hopac
-
+#if HOPAC
 open Hopac
-open Hopac.Extensions
-
 #endif
 
 // Core
@@ -28,58 +22,117 @@ open Hopac.Extensions
 /// State monad, with a concurrent return (the concurrency abstraction varies
 /// based on the variant of Freya in use).
 
-#if Hopac
-
 type Freya<'a> =
-    State -> Job<'a * State>
-
+#if HOPAC
+    State -> Job<FreyaResult<'a>>
 #else
+    State -> Async<FreyaResult<'a>>
+#endif
 
-type Freya<'a> =
-    State -> Async<'a * State>
-
+and FreyaResult<'a> =
+#if STRUCT
+    (struct ('a * State))
+#else
+    'a * State
 #endif
 
 /// The core Freya state type, containing the OWIN environment and other
 /// metadata data structures which should be passed through a Freya
 /// computation.
 
- and State =
+and State =
+      /// The underlying request environment.
     { Environment: Environment
+      /// Metadata associated with and bound to the lifetime of the request.
       Meta: Meta }
-
-    static member internal environment_ =
-        (fun x -> x.Environment), 
-        (fun e x -> { x with Environment = e })
-
-    static member internal meta_ =
-        (fun x -> x.Meta), 
-        (fun m x -> { x with Meta = m })
-
-    static member create =
-        fun environment ->
-            { Environment = environment
-              Meta = Meta.empty }
 
 /// An alias for the commonly used OWIN data type of an
 /// IDictionary<string,obj>.
 
- and Environment =
-    IDictionary<string, obj>
+and Environment =
+    System.Collections.Generic.IDictionary<string, obj>
 
 /// The Freya metadata data type containing data which should be passed through
 /// a Freya computation but which is not relevant to non-Freya functions and so
 /// is not considered part of the OWIN data model.
 
- and Meta =
-    { Memos: Map<Guid, obj> }
+and Meta =
+    /// Memoized value storage.
+    { Memos: Map<System.Guid, obj> }
 
-    static member internal memos_ =
+
+/// The Freya metadata data type containing data which should be passed through
+/// a Freya computation but which is not relevant to non-Freya functions and so
+/// is not considered part of the OWIN data model.
+
+module Meta =
+    /// A Lens to memoized values contained in request metadata.
+    let memos_ : Lens<Meta,Map<System.Guid,obj>>=
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
-    static member empty =
+    /// Provides an empty metadata object
+    let empty =
         { Memos = Map.empty }
+
+/// Patterns which allow destructuring Freya types.
+[<AutoOpen>]
+module Patterns =
+    /// Destructures a `FreyaResult` into a value and the associated state.
+    let inline (|FreyaResult|) (fr: FreyaResult<'a>) =
+        match fr with
+#if STRUCT
+        | struct (a, s) -> (a, s)
+#else
+        | a, s -> (a, s)
+#endif
+
+
+/// The result of a Freya operation, combining a value with the associated
+/// request state.
+[<RequireQualifiedAccess>]
+module FreyaResult =
+    /// Destructures a `FreyaResult`, selecting the associated state.
+    let inline (|State|) (fr: FreyaResult<'a>) =
+        match fr with
+#if STRUCT
+        | struct (_, s) -> s
+#else
+        | _, s -> s
+#endif
+
+    /// Destructures a `FreyaResult`, selecting the value.
+    let inline (|Value|) (fr: FreyaResult<'a>) =
+        match fr with
+#if STRUCT
+        | struct (a, _) -> a
+#else
+        | a, _ -> a
+#endif
+
+    /// Constructs a `FreyaResult` from a value and some associated state.
+    let inline create a s : FreyaResult<'a> =
+#if STRUCT
+        struct (a, s)
+#else
+        (a, s)
+#endif
+
+    /// Constructs a `FreyaResult` from a value and some associated state.
+    ///
+    /// Equivalent to `create` with the arguments flipped.
+    let inline createWithState s a : FreyaResult<'a> =
+        create a s
+
+    /// A Lens from a `FreyaResult` to its value.
+    let value_ : Aether.Lens<FreyaResult<'a>,'a> =
+        (fun (Value a) -> a),
+        (fun a (State s) -> create a s)
+
+    /// A Lens from a `FreyaResult` to its associated state.
+    let state_ : Aether.Lens<FreyaResult<'a>,State> =
+        (fun (State s) -> s),
+        (fun s (Value a) -> create a s)
 
 // State
 
@@ -89,14 +142,32 @@ type Freya<'a> =
 /// memo storage in the Meta instance.
 
 [<RequireQualifiedAccess>]
-[<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module State =
+    open Aether.Operators
+
+    /// A Lens from a `State` to its `Environment`.
+    let environment_ : Lens<State,Environment> =
+        (fun x -> x.Environment),
+        (fun e x -> { x with Environment = e })
+
+    /// A Lens from a `State` to associated metadata.
+    let meta_ : Lens<State,Meta> =
+        (fun x -> x.Meta),
+        (fun m x -> { x with Meta = m })
+
+    /// Creates a new `State` from a given `Environment`
+    /// with no metadata.
+    let create : Environment -> State =
+        do ()
+        fun (env : Environment) ->
+            { Environment = env
+              Meta = Meta.empty }
 
     /// A prism from the Freya State to a value of type 'a at a given string
     /// key.
 
     let key_<'a> k =
-            State.environment_
+            environment_
         >-> Dict.key_<string,obj> k
         >?> box_<'a>
 
@@ -109,7 +180,7 @@ module State =
     /// is not, or should not be present within the State.
 
     let value_<'a> k =
-            State.environment_
+            environment_
         >-> Dict.value_<string,obj> k
         >-> Option.mapIsomorphism box_<'a>
 
@@ -122,7 +193,7 @@ module State =
     /// is not, or should not be present within the State.
 
     let memo_<'a> i =
-            State.meta_
+            meta_
         >-> Meta.memos_
         >-> Map.value_ i
         >-> Option.mapIsomorphism box_<'a>
@@ -137,68 +208,6 @@ module State =
 [<RequireQualifiedAccess>]
 module Freya =
 
-    // Optic
-
-    /// Optic based access to the Freya computation state, analogous to the
-    /// Optic.* functions exposed by Aether, but working within a Freya function
-    /// and therefore part of the Freya ecosystem.
-
-    [<RequireQualifiedAccess>]
-    module Optic =
-
-        /// A function to get a value within the current computation State
-        /// given an optic from State to the required value.
-
-#if Hopac
-
-        let inline get o =
-            fun s ->
-                Job.result (Optic.get o s, s)
-
-#else
-
-        let inline get o =
-            fun s ->
-                async.Return (Optic.get o s, s)
-
-#endif
-
-        /// A function to set a value within the current computation State
-        /// given an optic from State to the required value and an instance of
-        /// the required value.
-
-#if Hopac
-
-        let inline set o v =
-            fun s ->
-                Job.result ((), Optic.set o v s)
-
-#else
-
-        let inline set o v =
-            fun s ->
-                async.Return ((), Optic.set o v s)
-
-#endif
-
-        /// A function to map a value within the current computation State
-        /// given an optic from the State the required value and a function
-        /// from the current value to the new value (a homomorphism).
-
-#if Hopac
-
-        let inline map o f =
-            fun s ->
-                Job.result ((), Optic.map o f s)
-
-#else
-
-        let inline map o f =
-            fun s ->
-                async.Return ((), Optic.map o f s)
-
-#endif
-
     // Common
 
     // Commonly defined functions against the Freya types, particularly the
@@ -206,140 +215,123 @@ module Freya =
     // directly within Freya programming but are also used within the Freya
     // computation expression defined later.
 
-    /// The apply function for Freya function types, taking a function
-    /// Freya<'a -> 'b> and a Freya<'a> and returning a Freya<'b>.
+    /// The init (or pure) function, used to raise a value of type 'a to a
+    /// value of type Freya<'a>.
 
-#if Hopac
-
-    let apply (m: Freya<'a>, f: Freya<'a -> 'b>) : Freya<'b> =
-        fun s ->
-            Job.bind (fun (f, s) ->
-                Job.map (fun (a, s) ->
-                    (f a, s)) (m s)) (f s)
-
+    let init (a: 'a) : Freya<'a> =
+        FreyaResult.create a
+#if HOPAC
+        >> Job.result
 #else
+        >> async.Return
+#endif
 
-    let apply (m: Freya<'a>, f: Freya<'a -> 'b>) : Freya<'b> =
+    /// The map function, used to map a value of type Freya<'a> to Freya<'b>,
+    /// given a function 'a -> 'b.
+
+    let map (a2b: 'a -> 'b) (aF: Freya<'a>) : Freya<'b> =
         fun s ->
-            async.Bind (f s, fun (f, s) ->
-                async.Bind (m s, fun (a, s) ->
-                    async.Return (f a, s)))
+#if HOPAC
+            aF s |> Job.map (fun (FreyaResult (a, s1)) -> FreyaResult.create (a2b a) s1)
+#else
+            async.Bind (aF s, fun (FreyaResult (a, s1)) ->
+                async.Return (FreyaResult.create (a2b a) s1))
+#endif
 
+    /// Takes two Freya values and maps them into a function
+    let map2 (a2b2c: 'a -> 'b -> 'c) (aF: Freya<'a>) (bF: Freya<'b>) : Freya<'c> =
+        fun s ->
+#if HOPAC
+            aF s |> Job.bind (fun (FreyaResult (a, s1)) ->
+                bF s1 |> Job.map (fun (FreyaResult (b, s2)) ->
+                    FreyaResult.create (a2b2c a b) s2))
+#else
+            async.Bind (aF s, fun (FreyaResult (a, s1)) ->
+                async.Bind (bF s1, fun (FreyaResult (b, s2)) ->
+                    async.Return (FreyaResult.create (a2b2c a b) s2)))
+#endif
+
+    /// Takes two Freya values and maps them into a function
+    let map3 (a2b2c2d: 'a -> 'b -> 'c -> 'd) (aF: Freya<'a>) (bF: Freya<'b>) (cF: Freya<'c>) : Freya<'d> =
+        fun s ->
+#if HOPAC
+            aF s |> Job.bind (fun (FreyaResult (a, s1)) ->
+                bF s1 |> Job.bind (fun (FreyaResult (b, s2)) ->
+                    cF s2 |> Job.map (fun (FreyaResult (c, s3)) ->
+                        FreyaResult.create (a2b2c2d a b c) s3)))
+#else
+            async.Bind (aF s, fun (FreyaResult (a, s1)) ->
+                async.Bind (bF s1, fun (FreyaResult (b, s2)) ->
+                    async.Bind (cF s2, fun (FreyaResult (c, s3)) ->
+                        async.Return (FreyaResult.create (a2b2c2d a b c) s3))))
 #endif
 
     /// The Bind function for Freya, taking a Freya<'a> and a function
     /// 'a -> Freya<'b> and returning a Freya<'b>.
 
-#if Hopac
-
-    let bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
+    let bind (a2bF: 'a -> Freya<'b>) (aF: Freya<'a>) : Freya<'b> =
         fun s ->
-            Job.bind (fun (a, s) ->
-                f a s) (m s)
-
+#if HOPAC
+            aF s |> Job.bind (fun (FreyaResult (a, s1)) -> a2bF a s1)
 #else
+            async.Bind (aF s, fun (FreyaResult (a, s1)) -> a2bF a s1)
+#endif
 
-    let bind (m: Freya<'a>, f: 'a -> Freya<'b>) : Freya<'b> =
+    /// The apply function for Freya function types, taking a function
+    /// Freya<'a -> 'b> and a Freya<'a> and returning a Freya<'b>.
+
+    let apply (aF: Freya<'a>) (a2Fb: Freya<'a -> 'b>) : Freya<'b> =
         fun s ->
-            async.Bind (m s, fun (a, s) ->
-                async.ReturnFrom (f a s))
-
+#if HOPAC
+            a2Fb s |> Job.bind (fun (FreyaResult (a2b, s1)) ->
+                aF s1 |> Job.map (fun (FreyaResult (a, s2)) ->
+                    FreyaResult.create (a2b a) s2))
+#else
+            async.Bind (a2Fb s, fun (FreyaResult (a2b, s1)) ->
+                async.Bind (aF s1, fun (FreyaResult (a, s2)) ->
+                    async.Return (FreyaResult.create (a2b a) s2)))
 #endif
 
     /// The Left Combine function for Freya, taking two Freya<_> functions,
     /// composing their execution and returning the result of the first
     /// function.
 
-#if Hopac
-
-    let combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
+    let combine (aF: Freya<'a>) (xF: Freya<'x>) : Freya<'a> =
         fun s ->
-            Job.bind (fun (_, s) ->
-                m2 s) (m1 s)
-
+#if HOPAC
+            xF s |> Job.bind (fun (FreyaResult.State s1) -> aF s1)
 #else
-
-    let combine (m1: Freya<_>, m2: Freya<'a>) : Freya<'a> =
-        fun s ->
-            async.Bind (m1 s, fun (_, s) ->
-                async.ReturnFrom (m2 s))
-
+            async.Bind (xF s, fun (FreyaResult.State s1) -> aF s1)
 #endif
 
     /// The Freya delay function, used to delay execution of a freya function
     /// by consuming a unit function to return the underlying Freya function.
 
-#if Hopac
-
-    let delay (f: unit -> Freya<'a>) : Freya<'a> =
-        fun s ->
-            f () s
-
+    let delay (u2aF: unit -> Freya<'a>) : Freya<'a> =
+#if HOPAC
+        Job.delayWith (fun s -> u2aF () s)
 #else
-
-    let delay (f: unit -> Freya<'a>) : Freya<'a> =
         fun s ->
-            f () s
-
+            u2aF () s
 #endif
 
     /// The identity function for Freya type functions.
 
-    let identity (f: Freya<_>) : Freya<_> =
-        f
+    let identity (xF: Freya<_>) : Freya<_> =
+        xF
 
-    /// The init (or pure) function, used to raise a value of type 'a to a
-    /// value of type Freya<'a>.
+    // Empty
 
-#if Hopac
-
-    let init (a: 'a) : Freya<'a> =
-        fun s ->
-            Job.result (a, s)
-
-#else
-
-    let init (a: 'a) : Freya<'a> =
-        fun s ->
-            async.Return (a, s)
-
-#endif
-
-    /// The map function, used to map a value of type Freya<'a> to Freya<'b>,
-    /// given a function 'a -> 'b.
-
-#if Hopac
-
-    let map (m: Freya<'a>, f: 'a -> 'b) : Freya<'b> =
-        fun s ->
-            Job.map (fun (a, s) ->
-                (f a, s)) (m s)
-
-#else
-
-    let map (m: Freya<'a>, f: 'a -> 'b) : Freya<'b> =
-        fun s ->
-            async.Bind (m s, fun (a, s') ->
-                async.Return (f a, s'))
-
-#endif
+    /// A simple convenience instance of an empty Freya function, returning
+    /// the unit type. This can be required for various forms of branching logic
+    /// etc. and is a convenience to save writing Freya.init () repeatedly.
+    let empty : Freya<unit> =
+        init ()
 
     /// The zero function, used to initialize a new function of Freya<unit>,
     /// effectively lifting the unit value to a Freya<unit> function.
 
-#if Hopac
-
-    let zero () : Freya<unit> =
-        fun s ->
-            Job.result ((), s)
-
-#else
-
-    let zero () : Freya<unit> =
-        fun s ->
-            async.Return ((), s)
-
-#endif
+    let zero () : Freya<unit> = empty
 
     // Extended
 
@@ -347,48 +339,53 @@ module Freya =
     // usual set of functions defined against Freya. In this case, interop with
     // the basic F# async system, and extended dual map function are given.
 
-#if Hopac
+#if HOPAC
 
-    let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
+    /// Converts a Hopac Job to a Freya
+    let fromJob (aJ: Job<'a>) : Freya<'a> =
         fun s ->
-            Job.map (fun b ->
-                (b, s)) (Job.fromAsync (f a))
+            aJ |> Job.map (FreyaResult.createWithState s)
 
-#else
-
-    let fromAsync (a: 'a, f: 'a -> Async<'b>) : Freya<'b> =
+    /// Lifts a function generating a Hopac Job to one creating a Freya
+    let liftJob (a2bJ: 'a -> Job<'b>) (a: 'a) : Freya<'b> =
         fun s ->
-            async.Bind (f a, fun b ->
-                async.Return (b, s))
+            a2bJ a |> Job.map (FreyaResult.createWithState s)
+
+    /// Binds a Hopac Job to a function generating a Freya
+    let bindJob (a2bF: 'a -> Freya<'b>) (aJ: Job<'a>) : Freya<'b> =
+        fun s ->
+            aJ |> Job.bind (fun a -> a2bF a s)
 
 #endif
 
-#if Hopac
-
-    let map2 (f: 'a -> 'b -> 'c, m1: Freya<'a>, m2: Freya<'b>) : Freya<'c> =
+    /// Converts an Async to a Freya
+    let fromAsync (aA: Async<'a>) : Freya<'a> =
         fun s ->
-            Job.bind (fun (a, s) ->
-                Job.map (fun (b, s)->
-                    (f a b, s)) (m2 s)) (m1 s)
-
+#if HOPAC
+            Job.fromAsync aA |> Job.map (FreyaResult.createWithState s)
 #else
-
-    let map2 (f: 'a -> 'b -> 'c, m1: Freya<'a>, m2: Freya<'b>) : Freya<'c> =
-        fun s ->
-            async.Bind (m1 s, fun (a, s) ->
-                async.Bind (m2 s, fun (b, s) ->
-                    async.Return (f a b, s)))
-
+            async.Bind (aA, fun a ->
+                async.Return (FreyaResult.create a s))
 #endif
 
-    // Empty
+    /// Lifts a function generating an Async to one creating a Freya
+    let liftAsync (a2bA: 'a -> Async<'b>) (a: 'a) : Freya<'b> =
+        fun s ->
+#if HOPAC
+            a2bA a |> Job.fromAsync |> Job.map (FreyaResult.createWithState s)
+#else
+            async.Bind (a2bA a, fun b ->
+                async.Return (FreyaResult.create b s))
+#endif
 
-    /// A simple convenience instance of an empty Freya function, returning
-    /// the unit type. This can be required for various forms of branching logic
-    /// etc. and is a convenience to save writing Freya.init () repeatedly.
-
-    let empty : Freya<unit> =
-        init ()
+    /// Binds an Async to a function generating a Freya
+    let bindAsync (a2bF: 'a -> Freya<'b>) (aA: Async<'a>) : Freya<'b> =
+        fun s ->
+#if HOPAC
+            Job.fromAsync aA |> Job.bind (fun a -> a2bF a s)
+#else
+            async.Bind (aA, fun a -> a2bF a s)
+#endif
 
     // Memoisation
 
@@ -397,31 +394,60 @@ module Freya =
     /// result of the function in the Environment instance. This ensures that
     /// the function will be evaluated once per request/response on any given
     /// thread.
-
-#if Hopac
-
-    let memo<'a> (m: Freya<'a>) : Freya<'a> =
-        let memo_ = State.memo_<'a> (Guid.NewGuid ())
+    let memo<'a> (aF: Freya<'a>) : Freya<'a> =
+        let memo_ = State.memo_<'a> (System.Guid.NewGuid ())
 
         fun s ->
             match Aether.Optic.get memo_ s with
             | Some memo ->
-                Job.result (memo, s)
-            | _ ->
-                Job.map (fun (memo, s) ->
-                    (memo, Aether.Optic.set memo_ (Some memo) s)) (m s)
-
+#if HOPAC
+                Job.result (FreyaResult.create memo s)
 #else
-
-    let memo<'a> (m: Freya<'a>) : Freya<'a> =
-        let memo_ = State.memo_<'a> (Guid.NewGuid ())
-
-        fun s ->
-            match Aether.Optic.get memo_ s with
-            | Some memo ->
-                async.Return (memo, s)
+                async.Return (FreyaResult.create memo s)
+#endif
             | _ ->
-                async.Bind (m s, fun (memo, s) ->
-                    async.Return (memo, Aether.Optic.set memo_ (Some memo) s))
+#if HOPAC
+                aF s |> Job.map (fun (FreyaResult (memo, s)) ->
+                    (FreyaResult.create memo (Aether.Optic.set memo_ (Some memo) s)))
+#else
+                async.Bind (aF s, fun (FreyaResult (memo, s)) ->
+                    async.Return (FreyaResult.create memo (Aether.Optic.set memo_ (Some memo) s)))
+#endif
 
+    /// Optic based access to the Freya computation state, analogous to the
+    /// Optic.* functions exposed by Aether, but working within a Freya function
+    /// and therefore part of the Freya ecosystem.
+    [<RequireQualifiedAccess>]
+    module Optic =
+
+        /// A function to get a value within the current computation State
+        /// given an optic from State to the required value.
+        let inline get o : Freya<'a> =
+#if HOPAC
+            Job.lift (fun s -> FreyaResult.create (Aether.Optic.get o s) s)
+#else
+            fun s ->
+                async.Return (FreyaResult.create (Aether.Optic.get o s) s)
+#endif
+
+        /// A function to set a value within the current computation State
+        /// given an optic from State to the required value and an instance of
+        /// the required value.
+        let inline set o v : Freya<unit> =
+#if HOPAC
+            Job.lift (fun (s: State) -> FreyaResult.create () (Aether.Optic.set o v s))
+#else
+            fun (s: State) ->
+                async.Return (FreyaResult.create () (Aether.Optic.set o v s))
+#endif
+
+        /// A function to map a value within the current computation State
+        /// given an optic from the State the required value and a function
+        /// from the current value to the new value (a homomorphism).
+        let inline map o f : Freya<unit> =
+#if HOPAC
+            Job.lift (fun (s: State) -> FreyaResult.create () (Aether.Optic.map o f s))
+#else
+            fun (s: State) ->
+                async.Return (FreyaResult.create () (Aether.Optic.map o f s))
 #endif
