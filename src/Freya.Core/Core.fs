@@ -1,5 +1,7 @@
 ﻿namespace Freya.Core
 
+open Aether
+
 #if HOPAC
 open Hopac
 #endif
@@ -39,18 +41,24 @@ and FreyaResult<'a> =
 /// computation.
 
 and State =
+      /// The underlying request environment.
     { Environment: Environment
+      /// Metadata associated with and bound to the lifetime of the request.
       Meta: Meta }
 
-    static member environment_ =
+    /// A Lens from a `State` to its `Environment`.
+    static member environment_ : Lens<State,Environment> =
         (fun x -> x.Environment),
         (fun e x -> { x with Environment = e })
 
-    static member meta_ =
+    /// A Lens from a `State` to associated metadata.
+    static member meta_ : Lens<State,Meta> =
         (fun x -> x.Meta),
         (fun m x -> { x with Meta = m })
 
-    static member create : Environment -> State =
+    /// Creates a new `State` from a given `Environment`
+    /// with no metadata.
+    static member create : (Environment -> State) =
         fun (env : Environment) ->
             { Environment = env
               Meta = Meta.empty }
@@ -66,18 +74,23 @@ and Environment =
 /// is not considered part of the OWIN data model.
 
 and Meta =
+    /// Memoized value storage.
     { Memos: Map<System.Guid, obj> }
 
-    static member memos_ =
+    /// A Lens to memoized values contained in request metadata.
+    static member memos_ : Lens<Meta,Map<System.Guid,obj>>=
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
+    /// Provides an empty metadata object
     static member empty =
         { Memos = Map.empty }
 
 
+/// Patterns which allow destructuring Freya types.
 [<AutoOpen>]
 module Patterns =
+    /// Destructures a `FreyaResult` into a value and the associated state.
     let inline (|FreyaResult|) (fr: FreyaResult<'a>) =
         match fr with
 #if STRUCT
@@ -87,9 +100,11 @@ module Patterns =
 #endif
 
 
-
+/// The result of a Freya operation, combining a value with the associated
+/// request state.
 [<RequireQualifiedAccess>]
 module FreyaResult =
+    /// Destructures a `FreyaResult`, selecting the associated state.
     let inline (|State|) (fr: FreyaResult<'a>) =
         match fr with
 #if STRUCT
@@ -98,6 +113,7 @@ module FreyaResult =
         | _, s -> s
 #endif
 
+    /// Destructures a `FreyaResult`, selecting the value.
     let inline (|Value|) (fr: FreyaResult<'a>) =
         match fr with
 #if STRUCT
@@ -106,6 +122,7 @@ module FreyaResult =
         | a, _ -> a
 #endif
 
+    /// Constructs a `FreyaResult` from a value and some associated state.
     let inline create a s : FreyaResult<'a> =
 #if STRUCT
         struct (a, s)
@@ -113,13 +130,18 @@ module FreyaResult =
         (a, s)
 #endif
 
+    /// Constructs a `FreyaResult` from a value and some associated state.
+    ///
+    /// Equivalent to `create` with the arguments flipped.
     let inline createWithState s a : FreyaResult<'a> =
         create a s
 
+    /// A Lens from a `FreyaResult` to its value.
     let value_ : Aether.Lens<FreyaResult<'a>,'a> =
         (fun (Value a) -> a),
         (fun a (State s) -> create a s)
 
+    /// A Lens from a `FreyaResult` to its associated state.
     let state_ : Aether.Lens<FreyaResult<'a>,State> =
         (fun (State s) -> s),
         (fun s (Value a) -> create a s)
@@ -386,4 +408,42 @@ module Freya =
 #else
                 async.Bind (aF s, fun (FreyaResult (memo, s)) ->
                     async.Return (FreyaResult.create memo (Aether.Optic.set memo_ (Some memo) s)))
+#endif
+
+    /// Optic based access to the Freya computation state, analogous to the
+    /// Optic.* functions exposed by Aether, but working within a Freya function
+    /// and therefore part of the Freya ecosystem.
+    [<RequireQualifiedAccess>]
+    module Optic =
+
+        /// A function to get a value within the current computation State
+        /// given an optic from State to the required value.
+        let inline get o : Freya<'a> =
+#if HOPAC
+            Job.lift (fun s -> FreyaResult.create (Aether.Optic.get o s) s)
+#else
+            fun s ->
+                async.Return (FreyaResult.create (Aether.Optic.get o s) s)
+#endif
+
+        /// A function to set a value within the current computation State
+        /// given an optic from State to the required value and an instance of
+        /// the required value.
+        let inline set o v : Freya<unit> =
+#if HOPAC
+            Job.lift (fun (s: State) -> FreyaResult.create () (Aether.Optic.set o v s))
+#else
+            fun (s: State) ->
+                async.Return (FreyaResult.create () (Aether.Optic.set o v s))
+#endif
+
+        /// A function to map a value within the current computation State
+        /// given an optic from the State the required value and a function
+        /// from the current value to the new value (a homomorphism).
+        let inline map o f : Freya<unit> =
+#if HOPAC
+            Job.lift (fun (s: State) -> FreyaResult.create () (Aether.Optic.map o f s))
+#else
+            fun (s: State) ->
+                async.Return (FreyaResult.create () (Aether.Optic.map o f s))
 #endif
