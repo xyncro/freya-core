@@ -46,23 +46,6 @@ and State =
       /// Metadata associated with and bound to the lifetime of the request.
       Meta: Meta }
 
-    /// A Lens from a `State` to its `Environment`.
-    static member environment_ : Lens<State,Environment> =
-        (fun x -> x.Environment),
-        (fun e x -> { x with Environment = e })
-
-    /// A Lens from a `State` to associated metadata.
-    static member meta_ : Lens<State,Meta> =
-        (fun x -> x.Meta),
-        (fun m x -> { x with Meta = m })
-
-    /// Creates a new `State` from a given `Environment`
-    /// with no metadata.
-    static member create : (Environment -> State) =
-        fun (env : Environment) ->
-            { Environment = env
-              Meta = Meta.empty }
-
 /// An alias for the commonly used OWIN data type of an
 /// IDictionary<string,obj>.
 
@@ -77,15 +60,20 @@ and Meta =
     /// Memoized value storage.
     { Memos: Map<System.Guid, obj> }
 
+
+/// The Freya metadata data type containing data which should be passed through
+/// a Freya computation but which is not relevant to non-Freya functions and so
+/// is not considered part of the OWIN data model.
+
+module Meta =
     /// A Lens to memoized values contained in request metadata.
-    static member memos_ : Lens<Meta,Map<System.Guid,obj>>=
+    let memos_ : Lens<Meta,Map<System.Guid,obj>>=
         (fun x -> x.Memos),
         (fun m x -> { x with Memos = m })
 
     /// Provides an empty metadata object
-    static member empty =
+    let empty =
         { Memos = Map.empty }
-
 
 /// Patterns which allow destructuring Freya types.
 [<AutoOpen>]
@@ -154,16 +142,32 @@ module FreyaResult =
 /// memo storage in the Meta instance.
 
 [<RequireQualifiedAccess>]
-[<CompilationRepresentation (CompilationRepresentationFlags.ModuleSuffix)>]
 module State =
-    open Aether
     open Aether.Operators
+
+    /// A Lens from a `State` to its `Environment`.
+    let environment_ : Lens<State,Environment> =
+        (fun x -> x.Environment),
+        (fun e x -> { x with Environment = e })
+
+    /// A Lens from a `State` to associated metadata.
+    let meta_ : Lens<State,Meta> =
+        (fun x -> x.Meta),
+        (fun m x -> { x with Meta = m })
+
+    /// Creates a new `State` from a given `Environment`
+    /// with no metadata.
+    let create : Environment -> State =
+        do ()
+        fun (env : Environment) ->
+            { Environment = env
+              Meta = Meta.empty }
 
     /// A prism from the Freya State to a value of type 'a at a given string
     /// key.
 
     let key_<'a> k =
-            State.environment_
+            environment_
         >-> Dict.key_<string,obj> k
         >?> box_<'a>
 
@@ -176,7 +180,7 @@ module State =
     /// is not, or should not be present within the State.
 
     let value_<'a> k =
-            State.environment_
+            environment_
         >-> Dict.value_<string,obj> k
         >-> Option.mapIsomorphism box_<'a>
 
@@ -189,7 +193,7 @@ module State =
     /// is not, or should not be present within the State.
 
     let memo_<'a> i =
-            State.meta_
+            meta_
         >-> Meta.memos_
         >-> Map.value_ i
         >-> Option.mapIsomorphism box_<'a>

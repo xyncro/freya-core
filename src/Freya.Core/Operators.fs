@@ -9,8 +9,6 @@ open System
 /// operations.
 
 module Operators =
-    open Freya.Core.Optics
-
     // Common
 
     // Symbolic operators for common monadic functions, using common operators

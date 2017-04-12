@@ -12,7 +12,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Prelude.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Core.fs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Optics.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Pipeline.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Configuration.fs" />
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core\Inference.fs" />
