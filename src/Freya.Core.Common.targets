@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <StructFreya>false</StructFreya>
     <DefineConstants Condition="'$(StructFreya)' == 'true'">$(DefineConstants);STRUCT</DefineConstants>
