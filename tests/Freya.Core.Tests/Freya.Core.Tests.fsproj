@@ -1,4 +1,4 @@
-<Project Sdk="FSharp.NET.Sdk;Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Freya.Core.Tests.Common.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\src\Freya.Core\Freya.Core.fsproj" />
