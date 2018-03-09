@@ -23,10 +23,10 @@ matrix:
 script: 
   - dotnet --info
   - dotnet restore
-  - dotnet build -c Release"
+  - dotnet build -c Release
   - dotnet test -c Release tests\Freya.Core.Tests\Freya.Core.Tests.fsproj
   - dotnet test -c Release tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj
-  - dotnet pack -c Release --include-symbols"
+  - dotnet pack -c Release --include-symbols
   - dotnet .\tests\Freya.Core.Benchmarks\bin\Release\netcoreapp2.0\Freya.Core.Benchmarks.dll
 
 branches:
