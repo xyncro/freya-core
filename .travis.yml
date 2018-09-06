@@ -24,10 +24,10 @@ script:
   - dotnet --info
   - dotnet restore
   - dotnet build -c Release
-  - dotnet test tests\Freya.Core.Tests\Freya.Core.Tests.fsproj -c Release 
-  - dotnet test tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj -c Release 
+  - dotnet test tests/Freya.Core.Tests/Freya.Core.Tests.fsproj -c Release 
+  - dotnet test tests/Freya.Core.Hopac.Tests/Freya.Core.Hopac.Tests.fsproj -c Release 
   - dotnet pack -c Release --include-symbols
-  - dotnet .\tests\Freya.Core.Benchmarks\bin\Release\netcoreapp2.0\Freya.Core.Benchmarks.dll
+  - dotnet tests/Freya.Core.Benchmarks/bin/Release/netcoreapp2.0/Freya.Core.Benchmarks.dll
 
 branches:
   except:
