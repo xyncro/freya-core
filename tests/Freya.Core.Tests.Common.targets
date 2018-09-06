@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Freya.Core.Tests\Core.Tests.fs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Freya.Core.Tests\Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
