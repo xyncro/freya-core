@@ -7,7 +7,7 @@ build_script:
   - ps: dotnet test -c Release tests\Freya.Core.Tests\Freya.Core.Tests.fsproj
   - ps: dotnet test -c Release tests\Freya.Core.Hopac.Tests\Freya.Core.Hopac.Tests.fsproj
   - ps: dotnet pack -c Release --include-symbols --version-suffix "aci-${env:APPVEYOR_BUILD_NUMBER}"
-  - ps: dotnet .\tests\Freya.Core.Benchmarks\bin\Release\netcoreapp1.1\Freya.Core.Benchmarks.dll
+  - ps: dotnet .\tests\Freya.Core.Benchmarks\bin\Release\netcoreapp2.0\Freya.Core.Benchmarks.dll
 
 test: off
 
