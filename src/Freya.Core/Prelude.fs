@@ -109,6 +109,9 @@ module Option =
     let mapLens (l: Lens<'a,'b>) : Prism<'a option,'b> =
         Option.map (fst l), snd l >> Option.map
 
+    let bindLens (p : Lens<'a, 'b option>) : Lens<'a option, 'b option> =
+        Option.bind (fst p), snd p >> Option.map
+
 // Constants
 
 /// Literal constants for the values of keys within the OWIN environment,
