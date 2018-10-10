@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="4.3.4" />
     <PackageReference Include="Aether" Version="[8.2.0,9)" />
   </ItemGroup>
 
